@@ -28,6 +28,9 @@ _act_spec.loader.exec_module(activate)
 _sem_spec = importlib.util.spec_from_file_location("semantic_grader", HERE / "evals" / "semantic.py")
 semantic_grader = importlib.util.module_from_spec(_sem_spec)
 _sem_spec.loader.exec_module(semantic_grader)
+_dual_spec = importlib.util.spec_from_file_location("dualarm_mod", HERE / "evals" / "dualarm.py")
+dualarm_mod = importlib.util.module_from_spec(_dual_spec)
+_dual_spec.loader.exec_module(dualarm_mod)
 
 
 def base(**kw):
@@ -307,6 +310,20 @@ class TestCli(unittest.TestCase):
             self.assertIn("Mechanism hypotheses (1)", brief.stdout)
             self.assertIn("claim limit", brief.stdout)
 
+    def test_cli_output_is_utf8_regardless_of_locale(self):
+        """Windows regression: a piped child must not write locale-encoded bytes.
+
+        Found by a live run: on Windows the child wrote cp125x while the reader
+        decoded UTF-8, crashing the pipe on Turkish/Spanish characters.
+        """
+        result = subprocess.run(
+            [sys.executable, str(DOMAIN), "brief", "--ontology", "songwriting",
+             "--file", "examples/ornek.jsonl"],
+            capture_output=True, encoding="utf-8", errors="replace")
+        self.assertEqual(result.returncode, 0,
+                         (result.stdout or "") + (result.stderr or ""))
+        self.assertIn("Dön geri", result.stdout)
+
     def test_audit_reports_ungrounded_notes_as_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
             notes = Path(tmp) / "notes.md"
@@ -455,7 +472,7 @@ class TestStrictConsistency(unittest.TestCase):
             result = subprocess.run(
                 [sys.executable, str(DOMAIN), "brief", "--file", str(out)],
                 capture_output=True, text=True, encoding="utf-8")
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(result.returncode, 0, (result.stdout or "") + (result.stderr or ""))
             self.assertEqual(result.stdout.count(rec["statement"]), 1)
             self.assertIn("## Coverage: unknown / absent under scope (1)", result.stdout)
 
@@ -702,6 +719,43 @@ class TestCausalityScreen(unittest.TestCase):
                    evidence=[],
                    claim_limit="Absence in this file only; nothing beyond this scope.")
         self.assertTrue(semantic_grader.rule_observation_has_locator(rec))
+
+
+    def test_causality_regression_table(self):
+        """The six labelled statements from the third external review (finding A)."""
+        table = [
+            ("X nedensellik gösterilmemiştir.", False),
+            ("X nedensellik gösterir.", True),
+            ("X does not increase recall.", False),
+            ("X not only increases recall but also engagement.", True),
+            ("X increases recall, not the melody.", True),
+            ("X may increase recall.", True),
+        ]
+        for stmt, expected in table:
+            self.assertEqual(domain.is_causal(stmt), expected, stmt)
+
+
+class TestSuiteHardening(unittest.TestCase):
+    """Third external review findings B and C: a suite must not score emptiness
+    as success, and a benchmark must not claim RUN without a real measurement."""
+
+    def test_grader_empty_store_fails_every_rule(self):
+        got = semantic_grader.grade_store([])
+        self.assertTrue(got)
+        self.assertTrue(all(not ok for ok in got.values()))
+
+    def test_grader_malformed_records_fail_every_rule(self):
+        got = semantic_grader.grade_store(["not a record", base()])
+        self.assertTrue(all(not ok for ok in got.values()))
+
+    def test_dualarm_judge_scores_are_strict_0_1(self):
+        ok = {"R1": 1, "R2": 0, "R3": True, "R4": False, "R5": 1, "R6": 1}
+        self.assertEqual(dualarm_mod._normalize_scores(ok),
+                         {"R1": 1, "R2": 0, "R3": 1, "R4": 0, "R5": 1, "R6": 1})
+        self.assertIsNone(dualarm_mod._normalize_scores(
+            {"R1": "0", "R2": 0, "R3": 1, "R4": 1, "R5": 1, "R6": 1}))
+        self.assertIsNone(dualarm_mod._normalize_scores({"R1": 1}))
+        self.assertIsNone(dualarm_mod._normalize_scores(None))
 
 
 if __name__ == "__main__":

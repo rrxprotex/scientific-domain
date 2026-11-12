@@ -74,6 +74,9 @@ def prompt_rows(cases):
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     data = json.loads(CASES.read_text(encoding="utf-8"))
     rows = record_rows(data["record_cases"]) + prompt_rows(data["prompt_cases"])
     passed = sum(1 for r in rows if r["passed"])

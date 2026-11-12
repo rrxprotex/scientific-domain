@@ -26,7 +26,7 @@ def run(argv, **kw):
     kw.setdefault("cwd", ROOT)
     return subprocess.run([sys.executable] + [str(a) for a in argv],
                           capture_output=True, text=True,
-                          encoding="utf-8", **kw)
+                          encoding="utf-8", errors="replace", **kw)
 
 
 def base_record(**kw):
@@ -198,6 +198,9 @@ def contract_cases():
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     rows = activation_cases() + contract_cases()
     passed = sum(1 for r in rows if r["passed"])
     payload = {

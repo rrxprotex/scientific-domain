@@ -95,6 +95,9 @@ def classify(text):
 
 def run_hook() -> int:
     """Claude Code UserPromptSubmit shape. Silent on SKIP/ABSTAIN."""
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     try:
         payload = json.load(sys.stdin)
     except (json.JSONDecodeError, OSError):
@@ -121,6 +124,9 @@ def run_hook() -> int:
 
 
 def main(argv=None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--text", help="task/prompt text")
     parser.add_argument("--stdin", action="store_true", help="read plain task text from stdin")

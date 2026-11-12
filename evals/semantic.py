@@ -123,16 +123,27 @@ RULES = {
 
 
 def grade_store(records, rules=None):
-    """Return {rule: bool} for a store. A rule passes only if every record obeys it."""
+    """Return {rule: bool} for a store. A rule passes only if every record obeys it.
+
+    An empty or malformed store FAILS every rule: `all([])` is vacuously True in
+    Python, and a grader that scores an empty store as perfect would contradict
+    the project rule that zero findings is a coverage statement, not success.
+    Non-dict entries are never silently dropped - they fail the whole store.
+    """
     rules = rules or list(RULES)
+    valid = [rec for rec in records if isinstance(rec, dict)]
+    wellformed = bool(records) and len(valid) == len(records)
     out = {}
     for name in rules:
         fn = RULES[name]
-        out[name] = all(fn(rec) for rec in records if isinstance(rec, dict))
+        out[name] = wellformed and all(fn(rec) for rec in valid)
     return out
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     data = json.loads((HERE / "semantic.json").read_text(encoding="utf-8"))
     rows = []
     for case in data["cases"]:
@@ -150,9 +161,12 @@ def main() -> int:
                      "passed": not problems, "problems": problems})
 
     passed = sum(1 for r in rows if r["passed"])
+    graded = sum(1 for c in data["cases"] for r in c["records"] if isinstance(r, dict))
+    malformed = sum(len(c["records"]) for c in data["cases"]) - graded
     print("=== SEMANTIC GRADER SELF-TEST ===")
     print(f"Cases: {len(rows)}  Passed: {passed}  Score: "
           f"{round(passed / len(rows), 4) if rows else 0.0}")
+    print(f"Records graded: {graded} ({malformed} malformed)")
     for r in rows:
         if not r["passed"]:
             print(f"  FAIL {r['id']}: {r['problems']}")

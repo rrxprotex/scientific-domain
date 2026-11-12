@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.7.2] - 2026-11-12
+
+Third external technical review fixes. All three findings reproduced against
+the code, fixed, and regression-tested with the reviewer's own case table.
+
+### Fixed
+- **Turkish negation hole (review finding A):** `is_causal("X nedensellik
+  gösterilmemiştir")` still returned True - bare `neden` matched inside
+  `nedensellik` and the negation suffix (`-memiş`) sat AFTER the trigger, out of
+  the pre-trigger screen's reach. The screen is now three-stage: (1) candidate
+  triggers use meaningful phrases (`neden ol`, `nedeniyle`, `nedensellik göster`)
+  instead of bare stems; (2a) pre-trigger negation, now excluding `not only`
+  ("not only increases" is a causal claim and was being wrongly defused - the
+  reverse leak); (2b) Turkish negative suffixes (`-mamış/-memiş/-maz/-mez/…`) on
+  the trigger word or the next one, consonant-guarded so `mazeret` is not read
+  as negation. The six-case regression table from the review is now a test.
+- **Empty-store vacuous pass (review finding B):** `grade_store([])` scored
+  every rule True because `all([])` is vacuously True, and non-dict records were
+  silently dropped - an empty model output could look structurally perfect,
+  contradicting "zero findings is coverage, not success". Empty or malformed
+  stores now FAIL every rule, and the grader reports valid/malformed counts.
+- **Fake RUN status (review finding C):** `dualarm.py` reported `RUN` whenever a
+  `--judge` command was passed, even if every judge output was invalid JSON, and
+  truthy coercion scored the string `"0"` as 1. Judge outputs now pass a strict
+  0/1 schema (`_normalize_scores`); `RUN` requires judged artifacts in BOTH
+  arms and zero judge errors, otherwise `GRADING_INCOMPLETE`. Rubric gains R6
+  (evidence-claim support).
+- **Windows pipe encoding crash (found by a live verification run):** on
+  Windows a piped child wrote locale-encoded bytes (cp1254/cp1252) while the
+  parent decoded UTF-8, crashing on Turkish/Spanish characters (`0xf6` = 'ö').
+  Every entry point (`domain.py`, `activate.py`, the eval runners) now forces
+  UTF-8 stdio deterministically, test readers use `errors="replace"`, and a
+  regression test asserts Unicode round-trip through the CLI.
+- 5 new unit tests (94 total) and 2 new adversarial cases (28 total).
+
 ## [0.7.1] - 2026-11-12
 
 Second external technical review fixes. Both findings reproduced against the

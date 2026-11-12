@@ -74,12 +74,13 @@ calls it."*
 
 ### M2 — Evidence of value (the missing measurement)
 - Instrument READY: `evals/dualarm.py` runs the two arms (skill on / off),
-  collects artifacts and grades them on rubric R1–R5, reporting the delta.
-  Status stays `NOT_RUN` until someone configures a model command and runs it.
+  collects artifacts and grades them on rubric R1–R6, reporting the delta.
+  Status stays `NOT_RUN` until someone configures a model command and runs it;
+  `RUN` is only reported after schema-valid judging in both arms.
 - Publish per-case artifacts and the delta, including a null result.
-- Adversarial evaluation (DONE): `evals/adversarial.py`, 24 labelled attacks
-  and controls; the suite already caught one real bug (greeting-disguised
-  knowledge tasks were skipped).
+- Adversarial evaluation (DONE): `evals/adversarial.py`, 28 labelled attacks
+  and controls; the suite already caught real bugs (greeting-disguised
+  knowledge tasks were skipped; `not only` causality smuggling).
 
 ### M3 — Growth (post-1.0, demand-driven)
 - Third domain ontology authored by someone who is not the engine author
@@ -101,6 +102,11 @@ but evidence that its discipline improves real research quality.
   relation graphs. Human confirmation (consent flow) is non-negotiable.
 - P3 Research benchmark: multi-model ON/OFF runs, >=100 real research tasks,
   blind judging, false-accept/false-reject rates, cost/latency tables.
+
+Reliability items closed after the third external review (2026-11-12):
+Turkish negation + `not only` regression table (finding A); empty/malformed
+grader stores now fail closed (finding B); dual-arm `RUN` requires schema-valid
+0/1 judging in both arms with zero judge errors (finding C).
 
 ## 6. Quality bar (release gates)
 

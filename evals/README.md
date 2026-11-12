@@ -6,13 +6,14 @@ Two runners, both **static, model-free, stdlib-only**:
   `eval-results.json`.
 - `python evals/semantic.py` — the structural grader for multi-record outputs
   (see below); a self-test over `semantic.json`.
-- `python evals/adversarial.py` — **adversarial scientific evaluation**: 26
-  labelled cases written before the runner - 16 attack records (fabricated
+- `python evals/adversarial.py` — **adversarial scientific evaluation**: 28
+  labelled cases written before the runner - 17 attack records (fabricated
   terms/theories, hidden causality, ungrounded mechanisms, scope-less absence,
-  credential strings, evidence-free PRESENT observations…) that must be REFUSED
-  with the named gate, 5 accepted records (4 controls + 1 negation-screen
-  regression), and 5 attack prompts (greeting disguise, prompt injection,
-  shouting/emoji, word repetition). Writes `adversarial-results.json`.
+  credential strings, evidence-free PRESENT observations, 'not only' causality
+  smuggling…) that must be REFUSED with the named gate, 6 accepted records
+  (4 controls + 2 negation-screen regressions), and 5 attack prompts (greeting
+  disguise, prompt injection, shouting/emoji, word repetition). Writes
+  `adversarial-results.json`.
 - `python evals/dualarm.py` — the **dual-arm benchmark instrument** (see below).
 
 No API key, no network, no language model.
@@ -49,10 +50,13 @@ semantic reasoning quality or model adherence.
 `NOT_RUN` (the state this repository ships in). With `--on` / `--off` commands
 (identical except for the skill being loaded) it runs every case twice,
 collects artifacts into `dualarm-artifacts/`, and — with `--judge` — grades each
-artifact on the rubric R1–R5 (canonical terms only, citation status labelled,
+artifact on the rubric R1–R6 (canonical terms only, citation status labelled,
 theory never OBSERVED, causal claims carry rivals + falsifier, claim_limit
-present). It reports the **delta between arms**, which is the only evidence of
-benefit.
+present, evidence supports the claim). It reports the **delta between arms**,
+which is the only evidence of benefit. `RUN` is only reported when both arms
+were judged with schema-valid 0/1 judge outputs and zero judge errors;
+otherwise the status honestly says `ARTIFACTS_COLLECTED_GRADING_NOT_RUN` or
+`GRADING_INCOMPLETE`.
 
 1. Take the 19 prompts from `cases.json` plus 10–20 real domain tasks.
 2. Run each twice: skill installed vs not installed, same model, same judge.

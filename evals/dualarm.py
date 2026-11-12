@@ -29,6 +29,14 @@ Rubric (applied to each produced artifact):
   R3 a theory link is never graded OBSERVED
   R4 every causal claim carries rivals + a falsifier
   R5 every record carries a claim_limit
+  R6 the cited evidence supports the claim it is attached to
+     (the judge's reading; structural checks alone cannot establish this)
+
+Status honesty: `RUN` is reported ONLY when both arms produced artifacts, the
+judge ran, its output passed the strict 0/1 schema on every rubric key, and at
+least one artifact per arm was judged. Otherwise the status says what is
+missing (`ARTIFACTS_COLLECTED_GRADING_NOT_RUN` / `GRADING_INCOMPLETE`) - a
+benchmark that can claim RUN without a real measurement is worse than none.
 
 Stdlib only. Does not call any API itself; the commands you give it do.
 """
@@ -48,7 +56,7 @@ RESULTS = ROOT / "dualarm-results.json"
 ARTIFACTS = ROOT / "dualarm-artifacts"
 CASES = HERE / "cases.json"
 
-RUBRIC = ["R1", "R2", "R3", "R4", "R5"]
+RUBRIC = ["R1", "R2", "R3", "R4", "R5", "R6"]
 
 NOT_RUN_REASON = (
     "No model command is configured. Static suites validate a deterministic "
@@ -68,7 +76,28 @@ def run_arm(command: str, prompt: str) -> str:
     return r.stdout
 
 
-def judge(command: str, prompt: str, output: str) -> dict:
+def _normalize_scores(scores):
+    """Strict judge schema: every rubric key present, value exactly 0 or 1.
+
+    Anything else - missing keys, "0" strings, floats, nulls - invalidates the
+    whole judgement (returns None). A truthy coercion (bool("0") == True) would
+    silently score a zero as one.
+    """
+    if not isinstance(scores, dict):
+        return None
+    out = {}
+    for k in RUBRIC:
+        v = scores.get(k)
+        if isinstance(v, bool):
+            v = 1 if v else 0
+        if v not in (0, 1):
+            return None
+        out[k] = v
+    return out
+
+
+def judge(command: str, prompt: str, output: str):
+    """Return {R: 0/1}, or None when the judge output fails the strict schema."""
     try:
         parts = shlex.split(command, posix=False)
     except ValueError:
@@ -78,11 +107,14 @@ def judge(command: str, prompt: str, output: str) -> dict:
     try:
         scores = json.loads(r.stdout)
     except json.JSONDecodeError:
-        return {}
-    return {k: 1 if scores.get(k) else 0 for k in RUBRIC}
+        return None
+    return _normalize_scores(scores)
 
 
 def main(argv=None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--on", help="model command WITH the skill loaded")
     p.add_argument("--off", help="model command WITHOUT the skill")
@@ -113,19 +145,23 @@ def main(argv=None) -> int:
     for arm, command in arms.items():
         scores = {k: 0 for k in RUBRIC}
         judged = 0
+        judge_errors = 0
         for i, prompt in enumerate(prompts):
             for rep in range(args.runs):
                 out = run_arm(command, prompt)
                 (ARTIFACTS / f"{arm}-{i:03d}-{rep}.txt").write_text(out, encoding="utf-8")
                 if args.judge:
                     s = judge(args.judge, prompt, out)
-                    if s:
+                    if s is None:
+                        judge_errors += 1
+                    else:
                         judged += 1
                         for k in RUBRIC:
                             scores[k] += s[k]
         per_arm[arm] = {
             "rubric_totals": scores,
             "artifacts_judged": judged,
+            "judge_errors": judge_errors,
         }
 
     def rate(arm, k):
@@ -134,17 +170,28 @@ def main(argv=None) -> int:
 
     delta = {k: (None if rate("on", k) is None or rate("off", k) is None
                  else round(rate("on", k) - rate("off", k), 4)) for k in RUBRIC}
+    total_judge_errors = sum(per_arm[a]["judge_errors"] for a in arms)
+    judged_in_both = all(per_arm[a]["artifacts_judged"] > 0 for a in arms)
+    if not args.judge:
+        status = "ARTIFACTS_COLLECTED_GRADING_NOT_RUN"
+    elif judged_in_both and total_judge_errors == 0:
+        status = "RUN"
+    else:
+        status = "GRADING_INCOMPLETE"
     payload = {
         "schemaVersion": 1,
         "startedAt": started,
-        "status": "RUN" if args.judge else "ARTIFACTS_COLLECTED_GRADING_NOT_RUN",
+        "status": status,
         "arms": {"on": args.on, "off": args.off},
         "runs_per_case": args.runs,
         "cases": len(prompts),
         "per_arm": per_arm,
+        "judge_errors": total_judge_errors,
         "delta_on_minus_off": delta,
         "interpretation": "The delta is the evidence of benefit. A high absolute "
-                          "score with a near-zero delta is NOT evidence. Report "
+                          "score with a near-zero delta is NOT evidence. RUN is "
+                          "only reported when both arms were judged with a "
+                          "schema-valid judge and zero judge errors. Report "
                           "per-case artifacts alongside the numbers.",
     }
     RESULTS.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n",

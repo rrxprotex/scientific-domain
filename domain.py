@@ -59,17 +59,27 @@ CAUSE_RE = re.compile(
     r"produces?|increases?|improves?|guarantees?|proves?|ensures?|"
     r"reduces?|decreases?|inhibits?|suppresses?|attenuates?|diminishes?|"
     r"prevents?|triggers?|mediates?)\b|"
-    r"neden|mekanizma|artırır|arttırır|sağlar|yol\s+açar|etkisidir|"
-    r"sonucunda|sayesinde|azalt|baskılar|baskılan|inhibe|önler|düşürür|"
-    r"giderir|tetikler|aracı olur",
+    r"neden\s+ol|nedeniyle|nedensellik\s+göster|mekanizma|artırır|arttırır|"
+    r"sağlar|yol\s+açar|etkisidir|sonucunda|sayesinde|azalt|baskılar|"
+    r"baskılan|inhibe|önler|düşürür|giderir|tetikler|aracı olur",
     re.I,
 )
 
-# Stage 2 of the causality screen: negation immediately before the trigger.
+# Stage 2a: negation immediately before the trigger ("does not increase").
+# "not only" is NOT negation - "not only increases" is a causal claim.
 NEGATION_BEFORE_RE = re.compile(
-    r"(not|no|never|cannot|without|doesn'?t|isn'?t|aren'?t|didn'?t|won'?t|"
-    r"değil|yok|olmaz|artmaz|artırmaz|azalmaz|azaltmaz|etkilemez)"
-    r"\s+(\S+\s+){0,2}$",
+    r"(not(?!\s+only)|no|never|cannot|without|doesn'?t|isn'?t|aren'?t|"
+    r"didn'?t|won'?t|değil|yok|olmaz|artmaz|artırmaz|azalmaz|azaltmaz|"
+    r"etkilemez)\s+(?:\S+\s+){0,2}$",
+    re.I,
+)
+
+# Stage 2b: a Turkish negative suffix on the trigger word or the next word
+# ("nedensellik gösterilmemiştir" -> -memiş). The suffix must be followed by a
+# consonant or the end of the word, so "mazeret" is not read as negation.
+TR_NEGATIVE_SUFFIX_RE = re.compile(
+    r"(mamış|memiş|maz|mez|madı|medi|mıyor|miyor|muyor|müyor)"
+    r"(?=[^aeıioöuüAEIİOÖUÜ]|$)",
     re.I,
 )
 
@@ -78,20 +88,26 @@ def is_causal(statement):
     """Causal wording that is NEGATED is not a causal claim.
 
     Stage 2 of the causality screen (stage 1 is CAUSE_RE candidate matching):
-    'Repetition does not increase recall' asserts no effect and must not be
-    forced into the mechanism layer. The screen is deliberately conservative in
-    the SAFE direction: only a negation immediately preceding the trigger
-    defuses it ('increases recall, not the melody' still counts as causal, so a
-    causal claim can never hide behind a trailing negation). Hedged modality
-    ('may increase') is still causal - it is a hypothesis and belongs in a
-    mechanism record. Negated claims quoted from a source belong in
-    DOCUMENTED_CLAIM, which rule T2 already exempts.
+    'Repetition does not increase recall' and 'nedensellik gösterilmemiştir'
+    assert no effect and must not be forced into the mechanism layer. The
+    screen is deliberately conservative in the SAFE direction: a trailing
+    contrastive negation ('increases recall, not the melody') does not defuse,
+    so a causal claim can never hide behind one; 'not only increases' is a
+    causal claim, not a negation. Hedged modality ('may increase') is still
+    causal - it is a hypothesis and belongs in a mechanism record. Negated
+    claims quoted from a source belong in DOCUMENTED_CLAIM, which rule T2
+    already exempts.
     """
     s = str(statement or "")
     m = CAUSE_RE.search(s)
     if not m:
         return False
-    return not NEGATION_BEFORE_RE.search(s[:m.start()])
+    if NEGATION_BEFORE_RE.search(s[:m.start()]):
+        return False
+    for w in s[m.start():].split()[:2]:
+        if TR_NEGATIVE_SUFFIX_RE.search(w):
+            return False
+    return True
 STRONG_RE = re.compile(
     r"\b(always|never|proven|does not exist|certainly|must|all songs|"
     r"scientifically proven)\b|her\s+zaman|her\s+şey|kesinlikle|kanıtlanmış|yoktur|"
@@ -992,7 +1008,20 @@ def cmd_use(args) -> int:
     return 0
 
 
+def _utf8_stdio():
+    """Deterministic UTF-8 output on every platform.
+
+    On Windows a piped child writes locale-encoded bytes (cp1254/cp1252) while
+    readers expect UTF-8, so Turkish/Spanish characters crash the pipe. The
+    tool's output encoding must not depend on the host locale.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def main(argv=None) -> int:
+    _utf8_stdio()
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--ontology", default=None,
                         help="domain vocabulary: a registered name or a file path "
