@@ -1,0 +1,11 @@
+{
+  "$schema": "https://code.claude.com/schemas/plugin.json",
+  "name": "scientific-domain",
+  "displayName": "Scientific Domain — Evidence-Linked Knowledge Records",
+  "version": "0.2.0",
+  "description": "Connect research observations to canonical scientific terms and theories, at the correct epistemic level. Refuses invented terminology, uncited theory links and unearned causal claims.",
+  "license": "MIT",
+  "keywords": ["skill", "scientific-representation", "ontology", "terminology", "theory-linking", "evidence", "domain-agnostic"],
+  "defaultEnabled": true,
+  "skills": ["./skills/scientific-domain"]
+}

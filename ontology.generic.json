@@ -1,0 +1,9 @@
+{
+  "domain": "generic",
+  "version": "0.2.0",
+  "verification_policy": "This ontology intentionally contains NO canonical terms and NO theories. It is the honest fallback when no sourced domain vocabulary matches. Only layer=observation records may be written against it; T9 refuses every term, theory and mechanism link. The absence of a vocabulary is reported, never filled with plausible names.",
+  "allow_term_links": false,
+  "terms": {},
+  "theories": {},
+  "relations": []
+}

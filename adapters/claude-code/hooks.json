@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "PY=$(command -v python3 || command -v python); if [ -z \"$PY\" ]; then exit 0; fi; exec \"$PY\" \"$CLAUDE_PLUGIN_ROOT/skills/scientific-domain/activate.py\" --hook",
+            "timeout": 10,
+            "statusMessage": "Scientific-domain activation check"
+          }
+        ]
+      }
+    ]
+  }
+}

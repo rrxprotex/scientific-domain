@@ -1,0 +1,16 @@
+{
+  "name": "scientific-domain-marketplace",
+  "plugins": [
+    {
+      "name": "scientific-domain",
+      "source": "./",
+      "description": "Evidence-linked scientific knowledge records for any domain",
+      "category": "knowledge-work",
+      "tags": ["scientific-representation", "ontology", "terminology", "theory-linking", "evidence"],
+      "strict": true,
+      "defaultEnabled": true,
+      "displayName": "Scientific Domain — Evidence-Linked Knowledge Records"
+    }
+  ],
+  "description": "A harness-agnostic skill for connecting material to the vocabulary and theories of a discipline."
+}

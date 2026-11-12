@@ -1,0 +1,25 @@
+{
+  "version": "0.3.0",
+  "note": "Hand-labelled activation cases. Labels were written BEFORE the classifier was run. ABSTAIN is a first-class outcome: a heuristic that cannot decide must say so rather than guess. EN and TR cases grade the full path; DE/ES/FR/RU cases grade the multilingual signal and routing-keyword additions. These cases grade a deterministic classifier, NOT a language model's decision to follow the skill.",
+  "cases": [
+    {"id": "ACT-001", "prompt": "", "expect": "ABSTAIN", "expect_domain": null, "why": "no task text"},
+    {"id": "ACT-002", "prompt": "hi", "expect": "SKIP", "expect_domain": null, "why": "greeting"},
+    {"id": "ACT-003", "prompt": "hmm", "expect": "ABSTAIN", "expect_domain": null, "why": "too short to classify"},
+    {"id": "ACT-004", "prompt": "fix a typo in the readme", "expect": "SKIP", "expect_domain": null, "why": "routine code edit"},
+    {"id": "ACT-005", "prompt": "commit the changes", "expect": "SKIP", "expect_domain": null, "why": "git operation"},
+    {"id": "ACT-006", "prompt": "write a poem about rain", "expect": "SKIP", "expect_domain": null, "why": "creative writing, no knowledge claim"},
+    {"id": "ACT-007", "prompt": "What is the mere exposure effect?", "expect": "SKIP", "expect_domain": null, "why": "short factual lookup"},
+    {"id": "ACT-008", "prompt": "What time is it?", "expect": "SKIP", "expect_domain": null, "why": "non-knowledge question"},
+    {"id": "ACT-009", "prompt": "Analyze this lyric and relate the repetition to established songwriting theory.", "expect": "ACTIVATE", "expect_domain": "songwriting", "why": "domain research with literature linking"},
+    {"id": "ACT-010", "prompt": "Şarkı sözündeki tekrarı bilimsel terimlerle ilişkilendir.", "expect": "ACTIVATE", "expect_domain": "songwriting", "why": "Turkish domain research"},
+    {"id": "ACT-011", "prompt": "Review these research notes for overclaiming", "expect": "ACTIVATE", "expect_domain": "generic", "why": "knowledge audit with no registered vocabulary"},
+    {"id": "ACT-012", "prompt": "Research the mechanism of X and cite literature", "expect": "ACTIVATE", "expect_domain": "generic", "why": "generic research; must not invent a domain"},
+    {"id": "ACT-013", "prompt": "biyomedikal makaledeki iddiaları kanıt düzeylerine ayır", "expect": "ACTIVATE", "expect_domain": "generic", "why": "unregistered expertise area; honest NO_MATCH fallback"},
+    {"id": "ACT-014", "prompt": "Explain why this chorus is memorable, with evidence", "expect": "ACTIVATE", "expect_domain": "songwriting", "why": "causal/evidence claim in a registered domain"},
+    {"id": "ACT-015", "prompt": "Analysiere dieses Gedicht und ordne die Wiederholung der Forschung zu", "expect": "ACTIVATE", "expect_domain": "literary-rhetoric", "why": "German domain research; routed by a German surface-form keyword"},
+    {"id": "ACT-016", "prompt": "Analiza la repetición de esta canción y relaciona los términos con la teoría", "expect": "ACTIVATE", "expect_domain": "songwriting", "why": "Spanish domain research; routed by a Spanish surface-form keyword"},
+    {"id": "ACT-017", "prompt": "Bonjour, merci beaucoup", "expect": "SKIP", "expect_domain": null, "why": "French greeting"},
+    {"id": "ACT-018", "prompt": "Сравни теории восприятия и приведи источники", "expect": "ACTIVATE", "expect_domain": "generic", "why": "Russian research signal with no registered vocabulary; honest generic fallback"},
+    {"id": "ACT-019", "prompt": "Korrigiere den Tippfehler in der readme", "expect": "SKIP", "expect_domain": null, "why": "German routine edit"}
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "built_at": "2026-11-09",
+  "policy": "Keyword routing is a heuristic nomination, never a verdict. A NO_MATCH falls back to the vocabulary-free generic ontology, where term/theory/mechanism links are REFUSED instead of invented. Adding a domain = adding one JSON file plus one entry here; no engine code changes. Keywords are lower-cased substring matches and include surface forms in EN, TR, DE, ES/PT/IT/FR and RU; choose specific tokens, avoid short ones.",
+  "default": "generic",
+  "generic": "generic",
+  "selection_policy": "There is NO shipped default domain. The user confirms the expertise domain explicitly (`python domain.py use --ontology <domain>`) and the choice is recorded in domain.config.json. Until then the generic ontology applies and every term/theory/mechanism link is refused (T9). `attention.py` scores candidate domains from keywords, file NAMES (material_hints) and store continuity - deterministic weighted scoring, not a neural model, and never a verdict.",
+  "claim_limit": "Routing decides which vocabulary to load, not what is true. A matched domain does not verify any claim.",
+  "ontologies": {
+    "songwriting": {
+      "file": "examples/ontology.songwriting.json",
+      "keywords": ["lyric", "lyrics", "song", "songwriting", "chorus", "verse", "refrain", "hook", "melody", "prosody", "şarkı", "nakarat", "güfte", "söz yazımı", "beste", "canción", "cancion", "chanson", "songtext", "liedtext", "canzone", "letra de", "песн"],
+      "material_hints": ["*.cho", "*.lyr", "*.lyrics", "lyric*", "song*"],
+      "citation_status": "MIXED",
+      "note": "Reference pack (opt-in): 11 terms, 9 theories. Bibliographic records verified; full texts not read. Confirm with `use` before linking."
+    },
+    "literary-rhetoric": {
+      "file": "examples/ontology.literary-rhetoric.json",
+      "keywords": ["rhetoric", "anaphora", "metaphor", "parallelism", "poetry", "poem", "figure of speech", "retorik", "şiir", "metafor", "söz sanatı", "gedicht", "poème", "poeme", "poesía", "poesia", "poema", "rhétorique", "rhetorik", "retórica", "метафор", "стихотвор"],
+      "material_hints": ["*.poem", "*.sonnet", "poem*", "siir*", "gedicht*"],
+      "citation_status": "PARTIAL",
+      "note": "Reference pack (opt-in): small second domain proving the engine is domain-agnostic. Reference-work sources; several entries are UNVERIFIED."
+    },
+    "generic": {
+      "file": "ontology.generic.json",
+      "keywords": [],
+      "material_hints": [],
+      "citation_status": "NOT_APPLICABLE",
+      "allow_term_links": false,
+      "note": "Zero canonical terms. Observation-only records are allowed; any term/theory/mechanism link is refused (T9)."
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "version": "0.1.0",
+  "note": "Structural grading cases. Each case carries a record store a model might produce for a task, and the structural properties the rubric requires. The grader is DETERMINISTIC: it checks claims/evidence structure, not prose quality. A store labelled 'good' must pass every rule; a store labelled 'bad' must violate the named rule. This grades a rubric, NOT a language model's reasoning.",
+  "rules": [
+    "claim_limit_present",
+    "observation_no_causal",
+    "term_has_rival_and_test",
+    "theory_never_observed",
+    "mechanism_has_rivals_falsifier",
+    "mechanism_grounded",
+    "observation_has_locator"
+  ],
+  "cases": [
+    {
+      "id": "SEM-001",
+      "label": "good",
+      "expect_rules_pass": ["claim_limit_present", "observation_no_causal", "term_has_rival_and_test", "theory_never_observed", "mechanism_has_rivals_falsifier", "mechanism_grounded", "observation_has_locator"],
+      "records": [
+        {"id": "LNK-001", "layer": "observation", "statement": "The chorus repeats the same line three times.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [{"kind": "artifact_site", "ref": "ornek.cho", "locator": "L10-L14"}], "evidence_class": "ARTIFACT", "representation": "PRESENT", "evidence_status": "OBSERVED", "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {}, "claim_limit": "Only this file's repetition count; it says nothing about listener recall."},
+        {"id": "LNK-002", "layer": "term", "statement": "The recurring section is a chorus rather than a refrain.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "ARTIFACT", "representation": "UNDER_IMPLEMENTED", "evidence_status": "INFERRED", "term_id": "TERM-CHORUS", "theory_ids": [], "rival_term_ids": ["TERM-REFRAIN"], "distinguishing_test": "A separate section boundary is marked; a refrain would be a returning line inside the verse.", "theory_link_note": "", "mechanism": {}, "claim_limit": "A form label only; it says nothing about whether the chorus is memorable."},
+        {"id": "LNK-003", "layer": "theory", "statement": "The repetition in this lyric may be read through processing fluency.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "MEASUREMENT", "representation": "UNDER_IMPLEMENTED", "evidence_status": "HYPOTHESIS", "term_id": null, "theory_ids": ["THEORY-PROCESSING-FLUENCY"], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "The fluency frame interprets the repetition count; it does not measure this listener.", "mechanism": {}, "claim_limit": "An interpretive frame; no listener measurement was made here."},
+        {"id": "LNK-004", "layer": "mechanism", "statement": "Chorus repetition increases listener recall.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS", "term_id": null, "theory_ids": ["THEORY-PROCESSING-FLUENCY"], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {"rivals": ["the same recall could come from melodic contour alone"], "falsifier": "If a non-repeated chorus is recalled equally often, the mechanism fails."}, "claim_limit": "Only a hypothesis; no listener data was collected in this file."}
+      ]
+    },
+    {
+      "id": "SEM-002",
+      "label": "bad",
+      "violates": "observation_no_causal",
+      "reason": "A causal claim ('increases recall') is hidden inside an observation record instead of a mechanism record.",
+      "records": [
+        {"id": "LNK-101", "layer": "observation", "statement": "Chorus repetition increases listener recall.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [{"kind": "artifact_site", "ref": "ornek.cho", "locator": "L10-L14"}], "evidence_class": "ARTIFACT", "representation": "PRESENT", "evidence_status": "OBSERVED", "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {}, "claim_limit": "Only this file's repetition count; it says nothing about listener recall."}
+      ]
+    },
+    {
+      "id": "SEM-003",
+      "label": "bad",
+      "violates": "mechanism_has_rivals_falsifier",
+      "reason": "A mechanism record with no rival explanation and no falsifier.",
+      "records": [
+        {"id": "LNK-102", "layer": "mechanism", "statement": "Chorus repetition increases listener recall.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS", "term_id": null, "theory_ids": ["THEORY-PROCESSING-FLUENCY"], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {"rivals": [], "falsifier": ""}, "claim_limit": "Only a hypothesis; no listener data was collected in this file."}
+      ]
+    },
+    {
+      "id": "SEM-004",
+      "label": "bad",
+      "violates": "theory_never_observed",
+      "reason": "A theory link graded OBSERVED, as if the citation measured this material.",
+      "records": [
+        {"id": "LNK-103", "layer": "theory", "statement": "Processing fluency explains this lyric.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "OBSERVED", "term_id": null, "theory_ids": ["THEORY-PROCESSING-FLUENCY"], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "The fluency frame interprets the repetition count here.", "mechanism": {}, "claim_limit": "An interpretive frame; no listener measurement was made here."}
+      ]
+    },
+    {
+      "id": "SEM-005",
+      "label": "bad",
+      "violates": "term_has_rival_and_test",
+      "reason": "A term record with no declared rival and no distinguishing test.",
+      "records": [
+        {"id": "LNK-104", "layer": "term", "statement": "The recurring section is a chorus.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "ARTIFACT", "representation": "UNDER_IMPLEMENTED", "evidence_status": "INFERRED", "term_id": "TERM-CHORUS", "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {}, "claim_limit": "A form label only; it says nothing about whether the chorus is memorable."}
+      ]
+    },
+    {
+      "id": "SEM-006",
+      "label": "bad",
+      "violates": "claim_limit_present",
+      "reason": "A record with an empty claim_limit; it never states what it may not assert.",
+      "records": [
+        {"id": "LNK-105", "layer": "observation", "statement": "The chorus repeats the same line three times.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [{"kind": "artifact_site", "ref": "ornek.cho", "locator": "L10-L14"}], "evidence_class": "ARTIFACT", "representation": "PRESENT", "evidence_status": "OBSERVED", "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {}, "claim_limit": ""}
+      ]
+    },
+    {
+      "id": "SEM-007",
+      "label": "bad",
+      "violates": "observation_has_locator",
+      "reason": "An observation with no locator; the reader cannot check the site.",
+      "records": [
+        {"id": "LNK-106", "layer": "observation", "statement": "The chorus repeats the same line three times.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [{"kind": "artifact_site", "ref": "ornek.cho", "locator": ""}], "evidence_class": "ARTIFACT", "representation": "PRESENT", "evidence_status": "OBSERVED", "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {}, "claim_limit": "Only this file's repetition count; it says nothing about listener recall."}
+      ]
+    },
+    {
+      "id": "SEM-008",
+      "label": "bad",
+      "violates": "mechanism_grounded",
+      "reason": "A mechanism grounded in a coined name, not a canonical term or theory.",
+      "records": [
+        {"id": "LNK-107", "layer": "mechanism", "statement": "Chorus repetition increases listener recall.", "domain": "songwriting", "scope": {"declared": true, "sources": ["ornek.cho"]}, "evidence": [], "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS", "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "", "mechanism": {"rivals": ["melodic contour alone"], "falsifier": "If a non-repeated chorus is recalled equally often, the mechanism fails."}, "claim_limit": "Only a hypothesis; no listener data was collected in this file."}
+      ]
+    }
+  ]
+}

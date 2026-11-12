@@ -1,0 +1,81 @@
+# This workflow assumes the PACKAGE FOLDER is the repository root.
+# When publishing, copy the contents of scientific-domain/ into a new repo.
+# It is intentionally dependency-free: no pip install, no secrets, no network.
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: py${{ matrix.python-version }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Unit tests
+        shell: bash
+        run: python tests.py
+
+      - name: Validate every registered ontology
+        shell: bash
+        run: python domain.py ontology-check --all
+
+      - name: Validate the shipped example (strict)
+        shell: bash
+        run: python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
+
+      - name: Brief smoke test
+        shell: bash
+        run: python domain.py brief --ontology songwriting --file examples/ornek.jsonl > /dev/null
+
+      - name: Static eval suite
+        shell: bash
+        run: python evals/run.py
+
+      - name: Activation gate smoke test
+        shell: bash
+        run: |
+          python activate.py --text "Analyze this lyric and relate it to theory"
+          echo '{"prompt":"fix a typo in the readme"}' | python activate.py --hook
+
+  honesty-gate:
+    name: honesty markers stay intact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: The live dual-arm eval must not be silently upgraded
+        shell: bash
+        run: |
+          python evals/run.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path("eval-results.json").read_text(encoding="utf-8"))
+          assert d["liveModelDualArm"]["status"] == "NOT_RUN", (
+              "Do not upgrade NOT_RUN to RUN without a real dual-arm model run")
+          assert "static" in d["runner"]
+          print("honesty markers OK")
+          PY
