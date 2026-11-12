@@ -238,7 +238,7 @@ python domain.py add --json @record.json --file records.jsonl           # Steps 
 python domain.py check --file records.jsonl --strict                    # Step 8
 python domain.py audit --notes notes.md --file records.jsonl            # post-hoc
 python domain.py brief --file records.jsonl                             # Step 8 (renders)
-python tests.py                                                         # 94 unit tests
+python tests.py                                                         # 102 unit tests
 python evals/run.py                                                     # static activation + CLI suite
 python evals/semantic.py                                                # structural grader self-test
 ```

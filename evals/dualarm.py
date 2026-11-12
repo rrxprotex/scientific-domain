@@ -21,7 +21,7 @@ Usage:
 
 Artifacts land in `dualarm-artifacts/`, results in `dualarm-results.json`.
 The judge receives JSON on stdin {"prompt":..., "output":...} and must emit JSON
-{"R1": 0/1, "R2": 0/1, "R3": 0/1, "R4": 0/1, "R5": 0/1}.
+{"R1": 0/1, "R2": 0/1, "R3": 0/1, "R4": 0/1, "R5": 0/1, "R6": 0/1}.
 
 Rubric (applied to each produced artifact):
   R1 only canonical term ids (no invented terms)
@@ -38,11 +38,19 @@ least one artifact per arm was judged. Otherwise the status says what is
 missing (`ARTIFACTS_COLLECTED_GRADING_NOT_RUN` / `GRADING_INCOMPLETE`) - a
 benchmark that can claim RUN without a real measurement is worse than none.
 
+Experiment integrity: the results JSON records the skill version and commit,
+the prompt-set hash, per-task ON/OFF outcomes (artifact, exit code, judge
+scores), failed run count and invalid-judge-output count. Two runs with the
+same experiment block are comparable; runs without one are not. Model and
+judge identity are recorded only when the operator supplies them
+(`--model-id` / `--judge-id`) - never inferred.
+
 Stdlib only. Does not call any API itself; the commands you give it do.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shlex
 import subprocess
@@ -66,14 +74,61 @@ NOT_RUN_REASON = (
 )
 
 
-def run_arm(command: str, prompt: str) -> str:
+def run_arm(command: str, prompt: str):
+    """Return (stdout, exit_code). The exit code is part of the experiment
+    record - a failed run is data, not something to hide."""
     try:
         parts = shlex.split(command, posix=False)
     except ValueError:
         parts = command.split()
     r = subprocess.run(parts + [prompt], capture_output=True, text=True,
                        encoding="utf-8", errors="replace", timeout=600)
-    return r.stdout
+    return r.stdout, r.returncode
+
+
+def _sha256(text):
+    return hashlib.sha256(str(text).encode("utf-8")).hexdigest()
+
+
+def _git_commit():
+    """Resolve the checked-out commit from .git without a subprocess.
+
+    Returns 'unknown' rather than a guess when the repository metadata is not
+    readable (exported tree, worktree quirk, no .git).
+    """
+    git_dir = ROOT / ".git"
+    try:
+        head = (git_dir / "HEAD").read_text(encoding="utf-8").strip()
+    except OSError:
+        return "unknown"
+    if not head.startswith("ref:"):
+        return head
+    ref = head[4:].strip()
+    try:
+        return (git_dir / ref).read_text(encoding="utf-8").strip()
+    except OSError:
+        pass
+    try:
+        for line in (git_dir / "packed-refs").read_text(encoding="utf-8").splitlines():
+            if line.split()[-1:] == [ref]:
+                return line.split()[0]
+    except OSError:
+        pass
+    return "unknown"
+
+
+def _skill_identity():
+    """Skill version (first CHANGELOG entry) + commit SHA, so a result can be
+    traced to the exact skill code that produced it."""
+    version = "unknown"
+    try:
+        for line in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines():
+            if line.startswith("## ["):
+                version = line[4:].split("]")[0]
+                break
+    except OSError:
+        pass
+    return {"version": version, "commit": _git_commit()}
 
 
 def _normalize_scores(scores):
@@ -120,16 +175,26 @@ def main(argv=None) -> int:
     p.add_argument("--off", help="model command WITHOUT the skill")
     p.add_argument("--judge", help="judge command grading one artifact against the rubric")
     p.add_argument("--runs", type=int, default=1, help="repetitions per case per arm (default 1)")
+    p.add_argument("--model-id", help="model name+version to record in the experiment block")
+    p.add_argument("--judge-id", help="judge name+version to record in the experiment block")
     args = p.parse_args(argv)
+    if args.runs < 1:
+        p.error("--runs must be >= 1; zero runs would score a benchmark with no measurements")
 
     started = datetime.now(timezone.utc).isoformat()
     if not (args.on and args.off):
         RESULTS.write_text(json.dumps({
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "startedAt": started,
             "status": "NOT_RUN",
             "reason": NOT_RUN_REASON,
             "rubric": RUBRIC,
+            "experiment": {
+                "skill": _skill_identity(),
+                "model_id": args.model_id or "not supplied",
+                "judge_id": args.judge_id or "not supplied",
+                "cases_run": 0,
+            },
             "interpretation": "Do not upgrade NOT_RUN to RUN without a real dual-arm "
                               "model run; the delta between arms is the only evidence "
                               "of benefit.",
@@ -141,28 +206,36 @@ def main(argv=None) -> int:
     prompts = [c["prompt"] for c in json.loads(CASES.read_text(encoding="utf-8"))["cases"]]
     ARTIFACTS.mkdir(exist_ok=True)
     arms = {"on": args.on, "off": args.off}
-    per_arm = {}
-    for arm, command in arms.items():
-        scores = {k: 0 for k in RUBRIC}
-        judged = 0
-        judge_errors = 0
-        for i, prompt in enumerate(prompts):
+    per_arm = {arm: {"rubric_totals": {k: 0 for k in RUBRIC},
+                     "artifacts_judged": 0, "judge_errors": 0} for arm in arms}
+    per_task = []
+    failed_runs = 0
+    invalid_judge_outputs = 0
+    for i, prompt in enumerate(prompts):
+        task = {"case": i, "prompt_sha256": _sha256(prompt), "arms": {}}
+        for arm, command in arms.items():
+            runs = []
             for rep in range(args.runs):
-                out = run_arm(command, prompt)
-                (ARTIFACTS / f"{arm}-{i:03d}-{rep}.txt").write_text(out, encoding="utf-8")
+                out, rc = run_arm(command, prompt)
+                fname = f"{arm}-{i:03d}-{rep}.txt"
+                (ARTIFACTS / fname).write_text(out, encoding="utf-8")
+                failed = rc != 0 or not out.strip()
+                failed_runs += 1 if failed else 0
+                entry = {"artifact": fname, "exit_code": rc,
+                         "failed": bool(failed), "scores": None}
                 if args.judge:
                     s = judge(args.judge, prompt, out)
+                    entry["scores"] = s
                     if s is None:
-                        judge_errors += 1
+                        per_arm[arm]["judge_errors"] += 1
+                        invalid_judge_outputs += 1
                     else:
-                        judged += 1
+                        per_arm[arm]["artifacts_judged"] += 1
                         for k in RUBRIC:
-                            scores[k] += s[k]
-        per_arm[arm] = {
-            "rubric_totals": scores,
-            "artifacts_judged": judged,
-            "judge_errors": judge_errors,
-        }
+                            per_arm[arm]["rubric_totals"][k] += s[k]
+                runs.append(entry)
+            task["arms"][arm] = runs
+        per_task.append(task)
 
     def rate(arm, k):
         n = per_arm[arm]["artifacts_judged"]
@@ -179,20 +252,31 @@ def main(argv=None) -> int:
     else:
         status = "GRADING_INCOMPLETE"
     payload = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "startedAt": started,
         "status": status,
-        "arms": {"on": args.on, "off": args.off},
-        "runs_per_case": args.runs,
-        "cases": len(prompts),
+        "experiment": {
+            "skill": _skill_identity(),
+            "model_id": args.model_id or "not supplied",
+            "judge_id": args.judge_id or "not supplied",
+            "arms": {"on": args.on, "off": args.off},
+            "prompt_set_sha256": _sha256(json.dumps(prompts, ensure_ascii=False)),
+            "runs_per_case": args.runs,
+            "cases": len(prompts),
+            "failed_runs": failed_runs,
+            "invalid_judge_outputs": invalid_judge_outputs,
+        },
         "per_arm": per_arm,
         "judge_errors": total_judge_errors,
         "delta_on_minus_off": delta,
+        "per_task": per_task,
         "interpretation": "The delta is the evidence of benefit. A high absolute "
                           "score with a near-zero delta is NOT evidence. RUN is "
                           "only reported when both arms were judged with a "
                           "schema-valid judge and zero judge errors. Report "
-                          "per-case artifacts alongside the numbers.",
+                          "per-case artifacts alongside the numbers. Compare "
+                          "results only when their experiment blocks match "
+                          "(skill commit, prompt_set_sha256, model_id, judge_id).",
     }
     RESULTS.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
                        encoding="utf-8")

@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.7.3] - 2026-11-12
+
+Fourth external technical review: publication verification, a CI defect the
+review surfaced, and the review's two hardening suggestions.
+
+### Fixed
+- **CI never ran (found while verifying the review's CI request):**
+  `.github/workflows/ci.yml` triggered on `branches: [main]` while the
+  repository publishes on `master` - GitHub reported 0 workflow runs for
+  every release. The trigger now covers both branches, and a regression test
+  pins it.
+- **Grader record integrity (review suggestion 1):** `grade_store` only
+  checked `isinstance(rec, dict)`, so `{}` or a record missing its statement
+  was gradable. `record_shape_ok` now requires a non-empty id, a known layer
+  and a non-empty statement; `load_jsonl`/`grade_jsonl` report unparseable
+  JSONL lines and fail closed instead of grading only the surviving lines.
+- **Benchmark experiment provenance (review suggestion 2):** dual-arm results
+  (schemaVersion 2) now record an `experiment` block - skill version +
+  commit SHA (resolved from `.git`, reported as `unknown`, never guessed),
+  prompt-set hash, per-task ON/OFF artifacts with exit codes and judge
+  scores, failed-run count, invalid-judge-output count, and optional
+  operator-supplied `--model-id`/`--judge-id`. `--runs 0` is now refused
+  (it used to build a benchmark out of zero measurements). Two results are
+  comparable only when their experiment blocks match.
+
+### Notes
+- v0.7.2 (commit `ca87478`, tag `v0.7.2`) verified live on GitHub `master`
+  via the API; the review's "latest commit is 2dc2b8f" snapshot predated the
+  push. The review's README-84/CHANGELOG-89 discrepancy likewise described
+  an older snapshot; both files count 94 as of 0.7.2.
+- 8 new unit tests (102 total).
+
 ## [0.7.2] - 2026-11-12
 
 Third external technical review fixes. All three findings reproduced against

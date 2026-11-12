@@ -758,5 +758,113 @@ class TestSuiteHardening(unittest.TestCase):
         self.assertIsNone(dualarm_mod._normalize_scores(None))
 
 
+class TestDataIntegrity(unittest.TestCase):
+    """Fourth external review: a grader must check record integrity, not just
+    dict-ness; a JSONL parse failure must fail closed; and a benchmark must
+    record the experiment that produced it."""
+
+    def test_grader_shape_incomplete_record_fails_every_rule(self):
+        for bad in ({"id": "X-1"},
+                    {"id": "X-1", "layer": "observation"},
+                    {"id": "X-1", "layer": "poem", "statement": "s"},
+                    {"id": " ", "layer": "observation", "statement": "s"},
+                    {"id": "X-1", "layer": "observation", "statement": ""}):
+            self.assertFalse(semantic_grader.record_shape_ok(bad), bad)
+            got = semantic_grader.grade_store([bad])
+            self.assertTrue(all(not ok for ok in got.values()), bad)
+
+    def test_grader_shape_complete_record_is_gradable(self):
+        rec = base()
+        self.assertTrue(semantic_grader.record_shape_ok(rec))
+        got = semantic_grader.grade_store([rec])
+        self.assertTrue(all(got.values()), got)
+
+    def test_grader_jsonl_parse_failure_fails_closed(self):
+        line = json.dumps(base(), ensure_ascii=False)
+        records, bad = semantic_grader.load_jsonl("not json\n" + line)
+        self.assertEqual(bad, [1])
+        self.assertEqual(len(records), 1)
+        got = semantic_grader.grade_jsonl("not json\n" + line)
+        self.assertTrue(all(not ok for ok in got.values()), got)
+
+    def test_grader_jsonl_roundtrip_grades(self):
+        line = json.dumps(base(), ensure_ascii=False)
+        records, bad = semantic_grader.load_jsonl(line)
+        self.assertEqual(bad, [])
+        got = semantic_grader.grade_jsonl(line)
+        self.assertTrue(all(got.values()), got)
+
+    def test_dualarm_rejects_zero_runs(self):
+        with self.assertRaises(SystemExit):
+            dualarm_mod.main(["--on", "cmd-a", "--off", "cmd-b", "--runs", "0"])
+
+    def test_dualarm_payload_records_experiment_integrity(self):
+        cases = json.loads((HERE / "evals" / "cases.json").read_text(encoding="utf-8"))["cases"]
+        with tempfile.TemporaryDirectory() as tmp:
+            saved = (dualarm_mod.RESULTS, dualarm_mod.ARTIFACTS,
+                     dualarm_mod.run_arm, dualarm_mod.judge)
+            dualarm_mod.RESULTS = Path(tmp) / "res.json"
+            dualarm_mod.ARTIFACTS = Path(tmp) / "art"
+            dualarm_mod.run_arm = lambda cmd, prompt: ("artifact text", 0)
+            dualarm_mod.judge = lambda cmd, prompt, out: {k: 1 for k in dualarm_mod.RUBRIC}
+            try:
+                rc = dualarm_mod.main(["--on", "cmd-a", "--off", "cmd-b",
+                                       "--judge", "judge-cmd", "--runs", "1",
+                                       "--model-id", "m-1", "--judge-id", "j-1"])
+                payload = json.loads(dualarm_mod.RESULTS.read_text(encoding="utf-8"))
+            finally:
+                (dualarm_mod.RESULTS, dualarm_mod.ARTIFACTS,
+                 dualarm_mod.run_arm, dualarm_mod.judge) = saved
+        self.assertEqual(rc, 0)
+        self.assertEqual(payload["status"], "RUN")
+        exp = payload["experiment"]
+        self.assertEqual(exp["model_id"], "m-1")
+        self.assertEqual(exp["judge_id"], "j-1")
+        self.assertIn("version", exp["skill"])
+        self.assertIn("commit", exp["skill"])
+        self.assertEqual(len(exp["prompt_set_sha256"]), 64)
+        self.assertEqual(exp["failed_runs"], 0)
+        self.assertEqual(exp["invalid_judge_outputs"], 0)
+        self.assertEqual(len(payload["per_task"]), len(cases))
+        task = payload["per_task"][0]
+        self.assertEqual(len(task["prompt_sha256"]), 64)
+        for arm in ("on", "off"):
+            self.assertEqual(len(task["arms"][arm]), 1)
+            self.assertEqual(task["arms"][arm][0]["scores"],
+                             {k: 1 for k in dualarm_mod.RUBRIC})
+            self.assertFalse(task["arms"][arm][0]["failed"])
+
+    def test_dualarm_payload_records_failed_runs_and_bad_judges(self):
+        cases = json.loads((HERE / "evals" / "cases.json").read_text(encoding="utf-8"))["cases"]
+        with tempfile.TemporaryDirectory() as tmp:
+            saved = (dualarm_mod.RESULTS, dualarm_mod.ARTIFACTS,
+                     dualarm_mod.run_arm, dualarm_mod.judge)
+            dualarm_mod.RESULTS = Path(tmp) / "res.json"
+            dualarm_mod.ARTIFACTS = Path(tmp) / "art"
+            dualarm_mod.run_arm = lambda cmd, prompt: ("" if cmd == "cmd-b" else "out", 1 if cmd == "cmd-b" else 0)
+            dualarm_mod.judge = lambda cmd, prompt, out: None  # every judge output invalid
+            try:
+                dualarm_mod.main(["--on", "cmd-a", "--off", "cmd-b",
+                                  "--judge", "judge-cmd", "--runs", "1"])
+                payload = json.loads(dualarm_mod.RESULTS.read_text(encoding="utf-8"))
+            finally:
+                (dualarm_mod.RESULTS, dualarm_mod.ARTIFACTS,
+                 dualarm_mod.run_arm, dualarm_mod.judge) = saved
+        exp = payload["experiment"]
+        self.assertEqual(exp["failed_runs"], len(cases))  # the whole off arm failed
+        self.assertEqual(exp["invalid_judge_outputs"], 2 * len(cases))
+        self.assertEqual(payload["status"], "GRADING_INCOMPLETE")
+
+    def test_ci_triggers_on_the_published_default_branch(self):
+        """Regression: ci.yml watched 'main' while the repo publishes on
+        'master', so CI ran zero times and the review could not verify via CI."""
+        yml = (HERE / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        for line in yml.splitlines():
+            if line.strip().startswith("branches:"):
+                self.assertIn("master", line)
+                return
+        self.fail("no branches trigger found in ci.yml")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

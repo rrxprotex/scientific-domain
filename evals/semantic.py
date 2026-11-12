@@ -122,16 +122,72 @@ RULES = {
 }
 
 
+LAYERS = ("observation", "term", "theory", "mechanism")
+RECORD_REQUIRED_FIELDS = ("id", "layer", "statement")
+
+
+def record_shape_ok(rec):
+    """Structural integrity of one record: parses to a dict carrying the
+    expected fields with usable values.
+
+    A dict is not enough - `isinstance(rec, dict)` accepted `{}` and a record
+    missing its statement. Only a record with a non-empty id, a known layer and
+    a non-empty statement is gradable; anything else is malformed.
+    """
+    if not isinstance(rec, dict):
+        return False
+    if not str(rec.get("id") or "").strip():
+        return False
+    if rec.get("layer") not in LAYERS:
+        return False
+    if not str(rec.get("statement") or "").strip():
+        return False
+    return True
+
+
+def load_jsonl(text):
+    """Parse a JSONL store. Returns (records, bad_lines) where bad_lines are
+    1-based line numbers that did not parse. Unparseable lines are reported,
+    never repaired or silently dropped.
+    """
+    records, bad_lines = [], []
+    for n, line in enumerate(str(text).splitlines(), 1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError:
+            bad_lines.append(n)
+    return records, bad_lines
+
+
+def grade_jsonl(text, rules=None):
+    """Grade a JSONL store fail-closed: any unparseable line fails every rule.
+
+    A store that cannot be parsed cannot be scored - returning partial grades
+    over only the lines that survived would turn a parsing failure into a
+    cleaner-looking score.
+    """
+    rules = rules or list(RULES)
+    records, bad_lines = load_jsonl(text)
+    out = grade_store(records, rules)
+    if bad_lines:
+        return {name: False for name in rules}
+    return out
+
+
 def grade_store(records, rules=None):
     """Return {rule: bool} for a store. A rule passes only if every record obeys it.
 
     An empty or malformed store FAILS every rule: `all([])` is vacuously True in
     Python, and a grader that scores an empty store as perfect would contradict
     the project rule that zero findings is a coverage statement, not success.
-    Non-dict entries are never silently dropped - they fail the whole store.
+    Non-dict or structurally incomplete entries are never silently dropped -
+    they fail the whole store (see `record_shape_ok`).
     """
     rules = rules or list(RULES)
-    valid = [rec for rec in records if isinstance(rec, dict)]
+    valid = [rec for rec in records if record_shape_ok(rec)]
     wellformed = bool(records) and len(valid) == len(records)
     out = {}
     for name in rules:
@@ -161,7 +217,8 @@ def main() -> int:
                      "passed": not problems, "problems": problems})
 
     passed = sum(1 for r in rows if r["passed"])
-    graded = sum(1 for c in data["cases"] for r in c["records"] if isinstance(r, dict))
+    graded = sum(1 for c in data["cases"] for r in c["records"]
+                 if record_shape_ok(r))
     malformed = sum(len(c["records"]) for c in data["cases"]) - graded
     print("=== SEMANTIC GRADER SELF-TEST ===")
     print(f"Cases: {len(rows)}  Passed: {passed}  Score: "

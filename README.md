@@ -78,7 +78,7 @@ Then validate the shipped reference pack end to end:
 ```bash
 python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
 python domain.py brief --ontology songwriting --file examples/ornek.jsonl
-python tests.py             # 94 unit tests
+python tests.py             # 102 unit tests
 python evals/run.py         # 30 static eval cases
 python evals/semantic.py    # 8 structural grader cases
 python evals/adversarial.py # 28 adversarial cases (attacks + controls)
@@ -200,7 +200,7 @@ ontology.index.json          domain registry (maps names to vocabulary files)
 ontology.generic.json        vocabulary-free DEFAULT (until the user confirms a domain)
 examples/                    OPT-IN reference packs: ontology.songwriting.json,
                              ontology.literary-rhetoric.json, ornek.* worked example
-tests.py                     94 unit tests
+tests.py                     102 unit tests
 evals/                       19 activation + 11 contract + 28 adversarial cases,
                              structural grader, dual-arm instrument
 adapters/                    Claude Code / WorkBuddy / OpenCode / generic
