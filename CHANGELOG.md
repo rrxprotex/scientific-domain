@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.8.0] - 2026-11-12
+
+Fifth external review: the milestone is not a validator feature but a
+cross-domain worked-examples collection. Two complete end-to-end reference
+packs in new scientific disciplines, each with synthetic measurement data,
+sources, an expected brief and labelled rejection cases.
+
+### Added
+- **`examples/physics-pendulum/` (worked example):** simple pendulum research
+  question (length vs period). 10 terms, 3 theories, 9 relations
+  (`ontology.physics.json`); SYNTHETIC `measurements.csv` (12 trials, length /
+  mass / angle / cycles / elapsed / period ± uncertainty, labelled in the file
+  header and in every claim_limit); 14 layered records; `sources.md`; expected
+  brief; 7 rejection cases (T1, T2, T5, T6, T7, T8, G6). Demonstrates the T6
+  cap live (PHY-012 stays CANDIDATE because THEORY-ERROR-ANALYSIS has no
+  verified source) and the DOCUMENTED_CLAIM/mechanism-hypothesis discipline.
+- **`examples/psychology-stroop/` (worked example):** Stroop effect research
+  question (ink-word conflict vs colour-naming time). 7 terms, 3 theories,
+  7 relations; SYNTHETIC participant data (no human subjects); 12 records
+  incl. PSY-005, a DOCUMENTED_CLAIM recording Stroop (1935)'s reported
+  finding as the source's claim rather than our observation; 7 rejection
+  cases (T1, T2, T5, T6, T7, T8, G6), including the individual-claim-
+  without-subject-data refusal the review asked for.
+- **Source verification with honest provenance:** Stroop (1935) and MacLeod
+  (1991) bibliographic records confirmed via the Crossref API; the OpenStax
+  pendulum section read in full text (open access); the 2023 damping paper
+  confirmed bibliographically only. Four entries are UNVERIFIED and say so;
+  their links are capped at CANDIDATE by T6.
+- **README: "Scientific Domain in Practice"** section (physics + psychology
+  worked examples, biology planned) and updated domains table / layout.
+- 10 new unit tests (112 total): both packs validate and render their expected
+  brief byte-for-byte; all 14 rejection cases fire their named gates; stores
+  validate without any mechanism record (nothing forces a mechanism);
+  synthetic labelling is present everywhere; `audit` nominates the
+  scope-overreach case; routing nominates the right pack domain.
+- 2 new contract cases (CON-012/CON-013): `check --strict` on both worked
+  examples, run from the eval suite on every CI matrix entry (32 static cases).
+
+### Changed
+- `test_index_registers_five_ontologies` (was `..._three_...`) and the
+  `ontology-check --all` count pins in `tests.py` and evals/run.py CON-001:
+  these assertions pin EXACT registry membership/size and were extended for
+  the two new registered domains.
+  Stated per CONTRIBUTING rule 1: the old assertions pinned "the registry
+  contains exactly these domains and this count"; the new form pins exactly
+  the same thing with five entries - no looser, a surprise domain still fails.
+
 ## [0.7.3] - 2026-11-12
 
 Fourth external technical review: publication verification, a CI defect the

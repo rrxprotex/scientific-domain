@@ -14,6 +14,22 @@ citing theories that were never sourced.
 > `docs/quick-reference.md` is the pocket card; `docs/rejection-examples.md`
 > covers the five refusals you will hit first.
 
+## Scientific Domain in Practice
+
+The engine's domain-independence is not an argument — it is demonstrated on
+worked research examples across disciplines, each with its own measurement
+data, sources, expected brief and labelled rejection cases:
+
+| Discipline | Example | Status | Journey |
+|---|---|---|---|
+| **Physics** | [simple pendulum](examples/physics-pendulum/) | **Worked example** | measurement → physical concept → theoretical model → mechanism hypothesis |
+| **Psychology** | [Stroop effect](examples/psychology-stroop/) | **Worked example** | experimental data → cognitive concept → theory → causal hypothesis (incl. DOCUMENTED_CLAIM handling) |
+| **Biology** | enzyme kinetics (Michaelis–Menten) | Planned | measurement → kinetic model → biological mechanism |
+
+Every pack ships SYNTHETIC data that is labelled as synthetic everywhere it
+appears, verified-vs-unverified source records, and rejection cases where each
+deliberately wrong claim is paired with the gate that must catch it.
+
 ## The protocol in seven lines
 
 1. Is this a knowledge-work task? (`activate.py`) If SKIP/ABSTAIN — stop.
@@ -78,8 +94,8 @@ Then validate the shipped reference pack end to end:
 ```bash
 python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
 python domain.py brief --ontology songwriting --file examples/ornek.jsonl
-python tests.py             # 102 unit tests
-python evals/run.py         # 30 static eval cases
+python tests.py             # 112 unit tests
+python evals/run.py         # 32 static eval cases
 python evals/semantic.py    # 8 structural grader cases
 python evals/adversarial.py # 28 adversarial cases (attacks + controls)
 python evals/dualarm.py     # dual-arm instrument -> NOT_RUN until a model is configured
@@ -116,7 +132,7 @@ no domain words and **ships no default domain**: until the user confirms one
 applies and every term/theory/mechanism link is refused (T9). `route` only
 proposes a vocabulary (`MATCHED / NO_MATCH / ABSTAIN`); it never decides.
 
-The two example domains are **opt-in reference packs** under `examples/`. They
+The example domains are **opt-in reference packs** under `examples/`. They
 teach the record format and power the test suite; they are not knowledge the
 skill asserts about your material.
 
@@ -124,6 +140,8 @@ skill asserts about your material.
 |---|---|---|---|
 | `songwriting` | 11 | 9 | reference pack / worked example; verified bibliographic records |
 | `literary-rhetoric` | 4 | 1 | second domain proving the engine is domain-agnostic |
+| `physics` | 10 | 3 | worked example: simple pendulum (measurement + model + mechanism) |
+| `psychology` | 7 | 3 | worked example: Stroop effect (human-behaviour material) |
 | `generic` | 0 | 0 | honest default; observation-only, all links refused (T9) |
 
 ```bash
@@ -198,10 +216,15 @@ attention.py                 deterministic domain attention: ranked proposals wi
 activate.py                  deterministic activation gate (+ hook mode)
 ontology.index.json          domain registry (maps names to vocabulary files)
 ontology.generic.json        vocabulary-free DEFAULT (until the user confirms a domain)
-examples/                    OPT-IN reference packs: ontology.songwriting.json,
-                             ontology.literary-rhetoric.json, ornek.* worked example
-tests.py                     102 unit tests
-evals/                       19 activation + 11 contract + 28 adversarial cases,
+examples/                    OPT-IN reference packs:
+                             ontology.songwriting.json, ontology.literary-rhetoric.json,
+                             ornek.* worked example
+examples/physics-pendulum/   worked example: simple pendulum (ontology, SYNTHETIC
+                             measurements, records, sources, expected brief,
+                             rejection cases)
+examples/psychology-stroop/  worked example: Stroop effect (same pack layout)
+tests.py                     112 unit tests
+evals/                       19 activation + 13 contract + 28 adversarial cases,
                              structural grader, dual-arm instrument
 adapters/                    Claude Code / WorkBuddy / OpenCode / generic
 docs/ontology-authoring.md   how to add a domain

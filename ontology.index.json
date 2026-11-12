@@ -21,6 +21,20 @@
       "citation_status": "PARTIAL",
       "note": "Reference pack (opt-in): small second domain proving the engine is domain-agnostic. Reference-work sources; several entries are UNVERIFIED."
     },
+    "physics": {
+      "file": "examples/physics-pendulum/ontology.physics.json",
+      "keywords": ["pendulum", "oscillation", "period", "frequency", "gravity", "mechanics", "experiment", "measurement uncertainty", "sarkaç", "salınım", "periyot", "yerçekimi", "fizik deneyi", "belirsizlik", "péndulo", "pendolo", "pendule", "pendel", "маятник", "колебан"],
+      "material_hints": ["measurements.csv", "*.pendulum", "pendulum*"],
+      "citation_status": "MIXED",
+      "note": "Reference pack (opt-in): simple pendulum worked example with SYNTHETIC measurements. OpenStax section read in full text; one paper verified bibliographically via Crossref; three terms UNVERIFIED. Confirm with `use` before linking."
+    },
+    "psychology": {
+      "file": "examples/psychology-stroop/ontology.psychology.json",
+      "keywords": ["stroop", "reaction time", "interference", "cognitive", "attention", "color naming", "colour naming", "interference effect", "deneysel psikoloji", "tepki süresi", "bilişsel", "dikkat", "renk adlandırma", "reaktionszeit", "tiempo de reacción", "temps de réaction", "внимание", "реакция"],
+      "material_hints": ["*.stroop", "stroop*", "reaction*"],
+      "citation_status": "MIXED",
+      "note": "Reference pack (opt-in): Stroop effect worked example with SYNTHETIC participant data. Stroop (1935) and MacLeod (1991) verified bibliographically via Crossref; full texts not read. Confirm with `use` before linking."
+    },
     "generic": {
       "file": "ontology.generic.json",
       "keywords": [],

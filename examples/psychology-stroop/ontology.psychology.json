@@ -1,0 +1,227 @@
+{
+  "domain": "psychology",
+  "version": "0.1.0",
+  "built_at": "2026-11-12",
+  "verification_policy": "Every source below was checked as stated in its access_note. Stroop (1935) and MacLeod (1991) bibliographic records (title, author, journal, volume, issue, pages, DOI) were confirmed through the Crossref API on 2026-11-12; their full texts were NOT read and their findings were NOT reproduced here. The theory statements below are standard textbook-level accounts; where a source's content is characterised, the access_note says exactly what was and was not seen. One entry is UNVERIFIED. No claim in this file is a finding about any real participant: the accompanying measurements.csv is SYNTHETIC demo data generated without human subjects.",
+  "source_status": {
+    "VERIFIED_BIBLIOGRAPHIC": "citation record confirmed; see access_note for whether the text was read; findings not reproduced here",
+    "PARTIAL": "citation record confirmed but incomplete",
+    "UNVERIFIED": "no locator verified in this build; may only back a CANDIDATE link"
+  },
+  "terms": {
+    "TERM-STROOP-INTERFERENCE": {
+      "label": "Stroop interference effect",
+      "definition": "The delay in naming the ink colour of a colour word when the word names a different colour, relative to a neutral baseline.",
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "indicators": ["longer colour-naming times in the incongruent condition than in the neutral condition", "effect measured at the level of a participant sample"],
+      "rival_terms": ["TERM-STROOP-FACILITATION"],
+      "distinguishing_test": "Compare against the NEUTRAL baseline, not only against the congruent condition: a delay versus neutral is interference; part of the congruent-incongruent gap can be facilitation.",
+      "sources": [
+        {
+          "ref": "Stroop, J. R. (1935), 'Studies of interference in serial verbal reactions', Journal of Experimental Psychology, 18(6), 643-662",
+          "locator": "https://doi.org/10.1037/h0054651",
+          "kind": "PRIMARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12 (title, journal, volume, issue, pages, DOI); full text NOT read; findings not reproduced here"
+        },
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read; it is cited as the standard review, not as a source whose argument was checked here"
+        }
+      ],
+      "claim_limit": "A population-level experimental effect. It cannot certify interference in a single participant or a single trial."
+    },
+    "TERM-STROOP-FACILITATION": {
+      "label": "Stroop facilitation effect",
+      "definition": "The speed-up in naming the ink colour when the word names the same colour, relative to a neutral baseline.",
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "indicators": ["shorter colour-naming times in the congruent condition than in the neutral condition"],
+      "rival_terms": ["TERM-STROOP-INTERFERENCE"],
+      "distinguishing_test": "Is the measured difference below (faster) or above (slower) the neutral baseline? Without a neutral condition, interference and facilitation cannot be separated.",
+      "sources": [
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read; the interference/facilitation distinction is standard terminology, not a quotation read here"
+        }
+      ],
+      "claim_limit": "A population-level experimental effect; not observable in one trial."
+    },
+    "TERM-CONGRUENT-TRIAL": {
+      "label": "congruent trial",
+      "definition": "A trial where the word meaning and the ink colour match.",
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "indicators": ["stimulus_word and stimulus_ink carry the same colour name"],
+      "rival_terms": ["TERM-INCONGRUENT-TRIAL"],
+      "distinguishing_test": "Do word and ink match? Matching is congruent; mismatching is incongruent; a non-colour word is the neutral condition, not a congruent one.",
+      "sources": [
+        {
+          "ref": "Stroop, J. R. (1935), 'Studies of interference in serial verbal reactions', Journal of Experimental Psychology, 18(6), 643-662",
+          "locator": "https://doi.org/10.1037/h0054651",
+          "kind": "PRIMARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read"
+        }
+      ],
+      "claim_limit": "A stimulus condition label. It says nothing about a participant's response."
+    },
+    "TERM-INCONGRUENT-TRIAL": {
+      "label": "incongruent trial",
+      "definition": "A trial where the word meaning and the ink colour conflict.",
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "indicators": ["stimulus_word names a different colour than stimulus_ink"],
+      "rival_terms": ["TERM-CONGRUENT-TRIAL"],
+      "distinguishing_test": "Do word and ink conflict? Conflict is incongruent; match is congruent; non-colour words belong to the neutral condition.",
+      "sources": [
+        {
+          "ref": "Stroop, J. R. (1935), 'Studies of interference in serial verbal reactions', Journal of Experimental Psychology, 18(6), 643-662",
+          "locator": "https://doi.org/10.1037/h0054651",
+          "kind": "PRIMARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read"
+        }
+      ],
+      "claim_limit": "A stimulus condition label; not a diagnosis and not a trait measure."
+    },
+    "TERM-REACTION-TIME": {
+      "label": "reaction time (RT)",
+      "definition": "Elapsed time between stimulus onset and the recorded response, measured in milliseconds.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["timestamped stimulus and response", "reported in milliseconds per trial"],
+      "rival_terms": ["TERM-RESPONSE-ACCURACY"],
+      "distinguishing_test": "Is the dependent variable response speed or response correctness? A slower mean with unchanged accuracy is a speed effect, not an accuracy effect.",
+      "sources": [
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read; RT as the standard dependent measure is textbook knowledge, not a quotation read here"
+        }
+      ],
+      "claim_limit": "A performance measure. An RT difference alone cannot establish which process caused it."
+    },
+    "TERM-RESPONSE-ACCURACY": {
+      "label": "response accuracy",
+      "definition": "The proportion of correct responses in a condition.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["correct/incorrect recorded per trial", "reported as error rate or per cent correct"],
+      "rival_terms": ["TERM-REACTION-TIME"],
+      "distinguishing_test": "Is the dependent variable correctness or speed? Under a speed-accuracy tradeoff the two can move in opposite directions and must be reported separately.",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a methods reference locator for the speed-accuracy tradeoff is still required",
+          "locator": "",
+          "kind": "REFERENCE",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; do not use for a link stronger than CANDIDATE"
+        }
+      ],
+      "claim_limit": "Unverified vocabulary in this build; usable descriptively and as a named rival only."
+    },
+    "TERM-NEUTRAL-CONDITION": {
+      "label": "neutral (baseline) condition",
+      "definition": "A condition with a non-colour word in a coloured ink, providing the baseline against which interference and facilitation are each measured.",
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "indicators": ["stimulus_word carries no colour meaning", "ink colour drawn from the same colour set"],
+      "rival_terms": ["TERM-CONGRUENT-TRIAL"],
+      "distinguishing_test": "Is the word a colour name? If not, the trial is neutral; without this baseline the congruent-incongruent gap conflates interference and facilitation.",
+      "sources": [
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read"
+        }
+      ],
+      "claim_limit": "A stimulus condition label. Choosing it does not fix how many trials or participants are needed."
+    }
+  },
+  "theories": {
+    "THEORY-AUTOMATICITY-ACCOUNT": {
+      "label": "automaticity account of Stroop interference",
+      "statement": "Word reading is highly practised and proceeds automatically, so it competes with the deliberately controlled colour-naming response when word and ink conflict.",
+      "explains": [
+        "why incongruent colour naming is slower than neutral",
+        "why the effect is robust across many task variants"
+      ],
+      "does_not_explain": [
+        "whether a specific participant read the word automatically in a specific trial",
+        "the size of the effect in a population the study did not sample",
+        "whether automaticity or a capacity limit is the operative cause in a given dataset"
+      ],
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "sources": [
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read; the account as stated here is standard textbook-level theory, NOT a checked quotation from the review"
+        }
+      ],
+      "claim_limit": "A theoretical account of a population-level effect. It cannot certify a mechanism in one dataset; rival accounts remain open (T6 respected here: source verified, claim kept CANDIDATE where appropriate)."
+    },
+    "THEORY-CAPACITY-ACCOUNT": {
+      "label": "limited-capacity / attentional account",
+      "statement": "Word and colour processing draw on limited-capacity resources; under conflict the shared demand produces the delay, without requiring reading to be automatic.",
+      "explains": [
+        "why interference can appear even when reading is made difficult",
+        "why dual-task load can modulate the effect"
+      ],
+      "does_not_explain": [
+        "why the effect is larger for colour words than for arbitrary distractor words",
+        "which resource is exhausted in a specific dataset"
+      ],
+      "evidence_class": "EXTERNAL_SUBJECT",
+      "sources": [
+        {
+          "ref": "MacLeod, C. M. (1991), 'Half a century of research on the Stroop effect: An integrative review', Psychological Bulletin, 109(2), 163-203",
+          "locator": "https://doi.org/10.1037/0033-2909.109.2.163",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record confirmed via the Crossref API on 2026-11-12; full text NOT read; cited as the standard review covering multiple accounts, not as a checked argument"
+        }
+      ],
+      "claim_limit": "A rival account. Its availability means an interference effect alone does not decide between automaticity and capacity."
+    },
+    "THEORY-SPEED-ACCURACY-TRADEOFF": {
+      "label": "speed-accuracy tradeoff",
+      "statement": "A responder can trade speed for accuracy by shifting response caution; a longer mean response time can therefore reflect a caution shift rather than processing conflict.",
+      "explains": [
+        "why longer times can co-unchanged accuracy",
+        "why an RT-only design cannot always separate conflict from caution"
+      ],
+      "does_not_explain": [
+        "the size of any specific interference effect",
+        "why a particular participant shifted caution"
+      ],
+      "evidence_class": "MEASUREMENT",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a locator for the speed-accuracy tradeoff literature is still required",
+          "locator": "",
+          "kind": "REFERENCE",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; no link to this theory may exceed CANDIDATE (T6)"
+        }
+      ],
+      "claim_limit": "No verified source in this build. Every link is capped at CANDIDATE; the theory may only name a rival reading."
+    }
+  },
+  "relations": [
+    {"from": "TERM-CONGRUENT-TRIAL", "to": "TERM-INCONGRUENT-TRIAL", "relation": "confused_with", "status": "CANDIDATE", "note": "Both are stimulus conditions; only their contrast with the neutral baseline names an effect."},
+    {"from": "TERM-STROOP-INTERFERENCE", "to": "TERM-STROOP-FACILITATION", "relation": "confused_with", "status": "CANDIDATE", "note": "The congruent-incongruent gap conflates the two without a neutral baseline."},
+    {"from": "TERM-REACTION-TIME", "to": "TERM-RESPONSE-ACCURACY", "relation": "confused_with", "status": "CANDIDATE", "note": "Speed and accuracy are different dependent variables."},
+    {"from": "TERM-STROOP-INTERFERENCE", "to": "THEORY-AUTOMATICITY-ACCOUNT", "relation": "interpreted_by", "status": "CANDIDATE", "note": "The classic interpretation of the effect."},
+    {"from": "TERM-REACTION-TIME", "to": "THEORY-SPEED-ACCURACY-TRADEOFF", "relation": "interpreted_by", "status": "CANDIDATE", "note": "RT differences admit a caution-shift reading."},
+    {"from": "THEORY-CAPACITY-ACCOUNT", "to": "THEORY-AUTOMATICITY-ACCOUNT", "relation": "competes_with", "status": "CONTESTED", "note": "Two accounts of the same interference effect; one dataset rarely decides between them."},
+    {"from": "THEORY-SPEED-ACCURACY-TRADEOFF", "to": "THEORY-AUTOMATICITY-ACCOUNT", "relation": "competes_with", "status": "CONTESTED", "note": "A caution shift is a rival reading of the same delay."}
+  ]
+}

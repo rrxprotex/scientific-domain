@@ -21,9 +21,9 @@
 
 ```bash
 cd scientific-domain
-python tests.py                    # 102 tests
+python tests.py                    # 112 tests
 python domain.py ontology-check --all
-python evals/run.py                # 30 static cases
+python evals/run.py                # 32 static cases
 python evals/semantic.py           # 8 structural grader cases
 python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
 python domain.py brief --ontology songwriting --file examples/ornek.jsonl

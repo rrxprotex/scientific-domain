@@ -1,0 +1,278 @@
+{
+  "domain": "physics",
+  "version": "0.1.0",
+  "built_at": "2026-11-12",
+  "verification_policy": "Every source below was checked as stated in its access_note. The OpenStax section is open access and its text (learning outcomes, simple-pendulum definition, restoring force discussion, small-angle approximation with the under-1% bound, period formula) was actually read on 2026-11-12. The 2023 Physics Education Research Journal paper was confirmed through the Crossref API (title, journal, year, DOI) on 2026-11-12; its full text was NOT read. Three entries are UNVERIFIED and carry no usable locator - they may only name a rival, never certify a link. No claim in this file is a finding about any real pendulum: the accompanying measurements.csv is SYNTHETIC demo data.",
+  "source_status": {
+    "VERIFIED_BIBLIOGRAPHIC": "citation record confirmed; see access_note for whether the text was read; findings not reproduced here",
+    "PARTIAL": "citation record confirmed but incomplete",
+    "UNVERIFIED": "no locator verified in this build; may only back a CANDIDATE link"
+  },
+  "terms": {
+    "TERM-SIMPLE-PENDULUM": {
+      "label": "simple pendulum",
+      "definition": "A point-mass bob suspended from a string of negligible mass and negligible stretch; the idealised model system whose small-angle motion is simple harmonic.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["bob diameter small relative to string length", "string mass negligible relative to bob mass", "swing confined to a vertical plane"],
+      "rival_terms": ["TERM-PHYSICAL-PENDULUM"],
+      "distinguishing_test": "Is the bob effectively a point mass on a massless string? If the body's mass distribution and moment of inertia matter, prefer TERM-PHYSICAL-PENDULUM.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums'",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); not peer-reviewed research"
+        }
+      ],
+      "claim_limit": "A model-system label for a rig. It cannot certify that a real apparatus is ideal; string elasticity and pivot friction are not measured in this pack."
+    },
+    "TERM-PHYSICAL-PENDULUM": {
+      "label": "physical pendulum",
+      "definition": "An extended rigid body swinging about a pivot, whose period depends on its moment of inertia and the distance to its centre of mass.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["object size not negligible relative to swing radius", "period shifts when mass distribution changes at fixed length"],
+      "rival_terms": ["TERM-SIMPLE-PENDULUM"],
+      "distinguishing_test": "Does the object's moment of inertia about the pivot affect the motion? If yes, this is a physical pendulum, not the point-mass model.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (physical pendulum learning outcome and treatment)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); the physical-pendulum subsection was seen in the section outline"
+        }
+      ],
+      "claim_limit": "A model-system label. Choosing it does not by itself determine which corrections matter for a given rig."
+    },
+    "TERM-PERIOD": {
+      "label": "period of oscillation (T)",
+      "definition": "Elapsed time per complete oscillation, in seconds per cycle.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["measured as total elapsed time divided by cycle count", "unit is seconds per cycle"],
+      "rival_terms": ["TERM-FREQUENCY"],
+      "distinguishing_test": "Is the quantity seconds per cycle (period, T) or cycles per second (frequency, f)? Check the unit before labelling.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (period and frequency of a simple pendulum)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook)"
+        }
+      ],
+      "claim_limit": "A quantity label. Reporting a period does not establish what governs it."
+    },
+    "TERM-FREQUENCY": {
+      "label": "frequency (f)",
+      "definition": "Oscillations per unit time, in cycles per second; the reciprocal of the period.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["unit is cycles per second or hertz", "computed as cycle count divided by elapsed time"],
+      "rival_terms": ["TERM-PERIOD"],
+      "distinguishing_test": "Is the quantity cycles per second (frequency) or seconds per cycle (period)? The two are reciprocals and must not be interchanged.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (angular frequency, frequency and period)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook)"
+        }
+      ],
+      "claim_limit": "A quantity label. A frequency value says nothing about the mechanism producing the oscillation."
+    },
+    "TERM-SMALL-ANGLE-APPROXIMATION": {
+      "label": "small-angle approximation",
+      "definition": "The replacement of sin(theta) by theta (radians) for small angles; below about 15 degrees the two differ by less than 1%, which reduces the pendulum equation to simple-harmonic form.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["all release angles below about 15 degrees", "period found nearly independent of amplitude at fixed length"],
+      "rival_terms": ["TERM-ANHARMONIC-CORRECTION"],
+      "distinguishing_test": "Are all release angles below about 15 degrees? If amplitudes are larger, or the measured period grows with amplitude, model the anharmonic correction instead.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (small-angle approximation; under-1% bound below ~15 degrees)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); the <1% difference claim was read in the section text"
+        }
+      ],
+      "claim_limit": "Valid only inside its stated angle bound. It cannot license ignoring amplitude in a large-angle experiment."
+    },
+    "TERM-ANHARMONIC-CORRECTION": {
+      "label": "anharmonic (large-angle) period correction",
+      "definition": "Beyond the small-angle regime the period exceeds the simple-harmonic value, with the leading correction growing as the square of the amplitude.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["release angles above about 15 degrees", "measured period drifts upward with amplitude at fixed length"],
+      "rival_terms": ["TERM-SMALL-ANGLE-APPROXIMATION"],
+      "distinguishing_test": "Does the period measurably grow with release angle at fixed length? Then the plain small-angle formula underestimates T and the correction model is the right label.",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a locator for the large-angle period series (e.g. a classical mechanics textbook section) is still required",
+          "locator": "",
+          "kind": "SECONDARY",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; do not use for a link stronger than CANDIDATE"
+        }
+      ],
+      "claim_limit": "Unverified vocabulary in this ontology; usable only as a named rival, never as a confirmed classification."
+    },
+    "TERM-RESTORING-FORCE": {
+      "label": "restoring force",
+      "definition": "The net force component directed toward equilibrium; for a pendulum bob this is the tangential component of the weight, minus m g sin(theta).",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["force component along the arc, directed to equilibrium", "magnitude m g sin(theta) in the ideal model"],
+      "rival_terms": ["TERM-GRAVITATIONAL-ACCELERATION"],
+      "distinguishing_test": "Is the quantity a force (newtons) or an acceleration (m/s^2)? The tangential force contains g but is not g itself.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (net force minus m g sin(theta) toward equilibrium - a restoring force)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); the restoring-force figure caption was read"
+        }
+      ],
+      "claim_limit": "A force label inside the ideal model. This pack contains no force measurement; a restoring-force claim here stays a mechanism hypothesis."
+    },
+    "TERM-MEASUREMENT-UNCERTAINTY": {
+      "label": "measurement uncertainty",
+      "definition": "Quantified doubt about a measurement result, expressed as a range derived from instrument resolution and repeatability, and reported alongside the value.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["value reported as x plus/minus u", "u traced to resolution or repeat spread"],
+      "rival_terms": ["TERM-SYSTEMATIC-ERROR"],
+      "distinguishing_test": "Can the stated doubt be traced to instrument resolution or repeat spread (uncertainty), or is it a consistent directional offset (systematic error)?",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a metrology reference locator (e.g. the GUM or a statistical methods handbook section) is still required",
+          "locator": "",
+          "kind": "REFERENCE",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; do not use for a link stronger than CANDIDATE"
+        }
+      ],
+      "claim_limit": "Unverified vocabulary in this ontology; the label may be used descriptively but cannot certify an error analysis."
+    },
+    "TERM-SYSTEMATIC-ERROR": {
+      "label": "systematic error (bias)",
+      "definition": "A consistent directional offset in measurement results, not reduced by repetition.",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["repeated measurements cluster tightly but off the reference value", "offset persists across operators or sessions"],
+      "rival_terms": ["TERM-MEASUREMENT-UNCERTAINTY"],
+      "distinguishing_test": "Does repetition shrink the doubt (uncertainty) or leave a persistent offset (systematic error)? Name which one the data pattern shows.",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a metrology or experimental-methods locator is still required",
+          "locator": "",
+          "kind": "REFERENCE",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; do not use for a link stronger than CANDIDATE"
+        }
+      ],
+      "claim_limit": "Unverified vocabulary in this ontology; usable only as a named rival, never as a confirmed diagnosis."
+    },
+    "TERM-GRAVITATIONAL-ACCELERATION": {
+      "label": "gravitational acceleration (g)",
+      "definition": "Local free-fall acceleration; the scale parameter of the simple pendulum period, T = 2 pi sqrt(L/g).",
+      "evidence_class": "MEASUREMENT",
+      "indicators": ["reported in m/s^2", "extracted from period and length through a model"],
+      "rival_terms": ["TERM-RESTORING-FORCE"],
+      "distinguishing_test": "Is the quantity the local acceleration itself (m/s^2) or a force component derived from it? State which was measured and which was modelled.",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (a pendulum can be used to measure the acceleration due to gravity; Example 15.3)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); Example 15.3 heading and the g-dependence paragraph were read"
+        }
+      ],
+      "claim_limit": "A g value inferred through the pendulum model is model-dependent; it is not an independent measurement of g."
+    }
+  },
+  "theories": {
+    "THEORY-SIMPLE-PENDULUM-MODEL": {
+      "label": "simple pendulum model (small-angle)",
+      "statement": "For release angles below about 15 degrees the pendulum equation reduces to simple-harmonic form and the period is T = 2 pi sqrt(L/g), independent of bob mass and nearly independent of amplitude.",
+      "explains": [
+        "why measured period grows roughly with the square root of length",
+        "how g can be estimated from period and length",
+        "why bob mass is not expected to change the period in the ideal model"
+      ],
+      "does_not_explain": [
+        "period behaviour at large amplitudes",
+        "energy loss through air resistance and pivot friction",
+        "whether a specific rig satisfies the ideal assumptions"
+      ],
+      "evidence_class": "MEASUREMENT",
+      "sources": [
+        {
+          "ref": "OpenStax, University Physics Volume 1, section 15.4 'Pendulums' (small-angle solution and period formula)",
+          "locator": "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums",
+          "kind": "SECONDARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "section text read on openstax.org on 2026-11-12 (open access textbook); the derivation is summarised in the section, not reproduced here"
+        }
+      ],
+      "claim_limit": "A model relation valid within its assumptions. It does not license ignoring uncertainty or damping when fitting real data."
+    },
+    "THEORY-DAMPED-OSCILLATION": {
+      "label": "damped harmonic oscillation",
+      "statement": "A real pendulum loses energy to air resistance and pivot friction; its amplitude decays over time and the damping slightly modifies the oscillation.",
+      "explains": [
+        "why amplitude decreases across successive cycles",
+        "why long timing runs may drift relative to the ideal model",
+        "why an ideal model can fit early cycles better than late ones"
+      ],
+      "does_not_explain": [
+        "the size of the damping in a specific rig without measurement",
+        "whether damping or a timing artefact caused a specific discrepancy"
+      ],
+      "evidence_class": "MEASUREMENT",
+      "sources": [
+        {
+          "ref": "'Tracking the Acceleration Due to Gravity and Damping of a Pendulum: A Video Analysis', Physics Education Research Journal 5(2), 2023",
+          "locator": "https://doi.org/10.21580/perj.2023.5.2.16614",
+          "kind": "PRIMARY",
+          "citation_status": "VERIFIED_BIBLIOGRAPHIC",
+          "access_note": "bibliographic record (title, journal, year, DOI) confirmed via the Crossref API on 2026-11-12; full text NOT read; findings not reproduced here"
+        }
+      ],
+      "claim_limit": "A rival frame. Its presence means the ideal-model reading of any discrepancy is CONTESTED, not settled."
+    },
+    "THEORY-ERROR-ANALYSIS": {
+      "label": "measurement error analysis",
+      "statement": "A measured value must be reported with a quantified uncertainty; combining resolution and repeatability bounds what a comparison of measured values can establish.",
+      "explains": [
+        "how to state a measured period as a value with a range",
+        "why a difference smaller than the combined uncertainty is not a finding"
+      ],
+      "does_not_explain": [
+        "the source of a specific bias",
+        "whether the chosen uncertainty model is adequate for a given rig"
+      ],
+      "evidence_class": "MEASUREMENT",
+      "sources": [
+        {
+          "ref": "UNVERIFIED - a metrology reference locator (e.g. the GUM) is still required",
+          "locator": "",
+          "kind": "REFERENCE",
+          "citation_status": "UNVERIFIED",
+          "access_note": "not verified in this build; no link to this theory may exceed CANDIDATE (T6)"
+        }
+      ],
+      "claim_limit": "No verified source in this build. Every link to this theory is capped at CANDIDATE until a locator is supplied."
+    }
+  },
+  "relations": [
+    {"from": "TERM-PERIOD", "to": "TERM-FREQUENCY", "relation": "confused_with", "status": "CANDIDATE", "note": "Reciprocals; the unit decides which label is right."},
+    {"from": "TERM-SMALL-ANGLE-APPROXIMATION", "to": "TERM-ANHARMONIC-CORRECTION", "relation": "confused_with", "status": "CANDIDATE", "note": "Both describe period-vs-amplitude behaviour; the release angle decides."},
+    {"from": "TERM-MEASUREMENT-UNCERTAINTY", "to": "TERM-SYSTEMATIC-ERROR", "relation": "confused_with", "status": "CANDIDATE", "note": "Spread and offset are different doubts and need different remedies."},
+    {"from": "TERM-SIMPLE-PENDULUM", "to": "THEORY-SIMPLE-PENDULUM-MODEL", "relation": "interpreted_by", "status": "CANDIDATE", "note": "The rig is the model system the theory describes."},
+    {"from": "TERM-PERIOD", "to": "THEORY-SIMPLE-PENDULUM-MODEL", "relation": "interpreted_by", "status": "CANDIDATE", "note": "The period relation is the theory's quantitative content."},
+    {"from": "TERM-RESTORING-FORCE", "to": "THEORY-SIMPLE-PENDULUM-MODEL", "relation": "interpreted_by", "status": "CANDIDATE", "note": "The restoring force is the model's causal core; it is not measured in this pack."},
+    {"from": "TERM-GRAVITATIONAL-ACCELERATION", "to": "THEORY-SIMPLE-PENDULUM-MODEL", "relation": "interpreted_by", "status": "CANDIDATE", "note": "g enters the period formula as the scale parameter."},
+    {"from": "TERM-MEASUREMENT-UNCERTAINTY", "to": "THEORY-ERROR-ANALYSIS", "relation": "interpreted_by", "status": "CANDIDATE", "note": "The term is operationalised by the error-analysis frame; no verified source yet."},
+    {"from": "THEORY-DAMPED-OSCILLATION", "to": "THEORY-SIMPLE-PENDULUM-MODEL", "relation": "competes_with", "status": "CONTESTED", "note": "Ideal model versus lossy reality; a discrepancy alone does not decide between them."}
+  ]
+}

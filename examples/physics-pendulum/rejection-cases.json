@@ -1,0 +1,134 @@
+{
+  "domain": "physics",
+  "version": "0.1.0",
+  "note": "Rejection cases for the physics-pendulum worked example. Every label was written BEFORE the case was run. A case must be REFUSED with the named gate(s); the pack's own records.jsonl is the ACCEPTED control set. Deliberately wrong scientific claims: each one is a plausible-sounding error this pack must catch.",
+  "record_cases": [
+    {
+      "id": "REJ-PHY-001",
+      "description": "correlation presented as causation: a trend statement smuggled into the observation layer with causal wording",
+      "expect": "refused",
+      "expect_gates": ["T2"],
+      "record": {
+        "id": "REJ-PHY-001", "layer": "observation",
+        "statement": "Sarkaç uzunluğundaki artış periyot süresini artırır.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-16"}],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; nedensel iddia mekanizma katmanına aittir."
+      }
+    },
+    {
+      "id": "REJ-PHY-002",
+      "description": "plausible-sounding fabricated term: harmonic period drift is not declared vocabulary",
+      "expect": "refused",
+      "expect_gates": ["T1"],
+      "record": {
+        "id": "REJ-PHY-002", "layer": "term",
+        "statement": "Ölçülen periyot değerlerindeki salınım, harmonic period drift etkisi olarak sınıflandırılabilir.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-16"}],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "INFERRED",
+        "term_id": "TERM-HARMONIC-PERIOD-DRIFT", "theory_ids": [],
+        "rival_term_ids": ["TERM-PERIOD"],
+        "distinguishing_test": "Sapma periyotla birlikte mi değişiyor; kontrol için uzunluk sabit tutulmalıdır.",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; uydurma terim T1 ile reddedilmelidir."
+      }
+    },
+    {
+      "id": "REJ-PHY-003",
+      "description": "theory recorded as an observation: a model link marked OBSERVED",
+      "expect": "refused",
+      "expect_gates": ["T5"],
+      "record": {
+        "id": "REJ-PHY-003", "layer": "theory",
+        "statement": "Basit sarkaç modelinin periyot bağıntısı bu verilerde gözlemlenmiştir.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-16"}],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": ["THEORY-SIMPLE-PENDULUM-MODEL"],
+        "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "Model bu kayıtta ölçülen değerlerle karşılaştırılmıştır.",
+        "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; teori bağlantısı hiç OBSERVED olamaz."
+      }
+    },
+    {
+      "id": "REJ-PHY-004",
+      "description": "mechanism without rivals or falsifier: the classic 'everything is a mechanism' move",
+      "expect": "refused",
+      "expect_gates": ["T7"],
+      "record": {
+        "id": "REJ-PHY-004", "layer": "mechanism",
+        "statement": "Yerçekimi kuvveti salınımı tetikler.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS",
+        "term_id": null, "theory_ids": ["THEORY-SIMPLE-PENDULUM-MODEL"],
+        "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "",
+        "mechanism": {"rivals": [], "falsifier": ""},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; rakipsiz ve falsifiye edilemez mekanizma olmaz."
+      }
+    },
+    {
+      "id": "REJ-PHY-005",
+      "description": "ungrounded mechanism with a coined name, no canonical term or theory behind it",
+      "expect": "refused",
+      "expect_gates": ["T8"],
+      "record": {
+        "id": "REJ-PHY-005", "layer": "mechanism",
+        "statement": "İp gerilmesi salınım döngüsünü tetikler.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS",
+        "term_id": null, "theory_ids": [],
+        "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "",
+        "mechanism": {"rivals": ["Başka bir açıklama"], "falsifier": "Ölçülebilir bir reddedilme koşulu."},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; kanonik terim veya teoriye dayanmayan mekanizma reddedilir."
+      }
+    },
+    {
+      "id": "REJ-PHY-006",
+      "description": "untested mass-independence conclusion presented as OBSERVED with no evidence rows",
+      "expect": "refused",
+      "expect_gates": ["G6"],
+      "record": {
+        "id": "REJ-PHY-006", "layer": "observation",
+        "statement": "Sarkacın periyot süresi kütleyle değişmez.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; sınanmamış sonuç kanıtsız OBSERVED olamaz."
+      }
+    },
+    {
+      "id": "REJ-PHY-007",
+      "description": "T6 cap bypass attempt: link to a theory with no VERIFIED_BIBLIOGRAPHIC source, claimed as INFERRED",
+      "expect": "refused",
+      "expect_gates": ["T6"],
+      "record": {
+        "id": "REJ-PHY-007", "layer": "theory",
+        "statement": "Belirsizlik analizi bu ölçümlerin doğruluğunu garanti eder.",
+        "domain": "physics",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "MEASUREMENT", "representation": "UNKNOWN", "evidence_status": "INFERRED",
+        "term_id": null, "theory_ids": ["THEORY-ERROR-ANALYSIS"],
+        "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "Bu bağlantı T6 sınırını aşmayı deniyor; teorinin doğrulanmış kaynağı yoktur.",
+        "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; kaynak doğrulanmadan INFERRED seviyesi kullanılamaz."
+      }
+    }
+  ]
+}

@@ -338,10 +338,15 @@ class TestCli(unittest.TestCase):
 
 
 class TestRegistryAndRouting(unittest.TestCase):
-    def test_index_registers_three_ontologies(self):
+    def test_index_registers_five_ontologies(self):
+        # Was test_index_registers_three_ontologies. The assertion pins the
+        # EXACT registry membership (no surprise domains), so registering the
+        # two worked-example domains (physics, psychology) grows the pinned
+        # list; the check is no looser than before.
         idx = domain.load_index()
         self.assertEqual(sorted(idx["ontologies"]),
-                         ["generic", "literary-rhetoric", "songwriting"])
+                         ["generic", "literary-rhetoric", "physics",
+                          "psychology", "songwriting"])
 
     def test_domain_name_resolves_to_a_file(self):
         self.assertEqual(domain.load_ontology("songwriting")["domain"], "songwriting")
@@ -459,7 +464,9 @@ class TestStrictConsistency(unittest.TestCase):
             [sys.executable, str(DOMAIN), "ontology-check", "--all"],
             capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("OK 3 registered ontologies", result.stdout)
+        # Was "OK 3 registered ontologies" - same exact-count pin, updated for
+        # the two registered worked-example domains (physics, psychology).
+        self.assertIn("OK 5 registered ontologies", result.stdout)
 
     def test_brief_does_not_repeat_a_statement(self):
         """A record listed in a layer must not appear a second time as an 'unknown' finding."""
@@ -864,6 +871,121 @@ class TestDataIntegrity(unittest.TestCase):
                 self.assertIn("master", line)
                 return
         self.fail("no branches trigger found in ci.yml")
+
+
+class TestCrossDomainPacks(unittest.TestCase):
+    """Fifth external review: cross-domain worked examples. Each pack must
+    validate, render a brief identical to its expected-brief.md, refuse every
+    labelled rejection case with the named gate, and stay honest about its
+    synthetic data. Nothing here edits an existing assertion."""
+
+    PACKS = {
+        "physics": HERE / "examples" / "physics-pendulum",
+        "psychology": HERE / "examples" / "psychology-stroop",
+    }
+
+    def _check_cli(self, onto, path):
+        return subprocess.run(
+            [sys.executable, str(DOMAIN), "check", "--ontology", onto,
+             "--file", str(path), "--strict"],
+            capture_output=True, encoding="utf-8", errors="replace")
+
+    def test_physics_pack_validates(self):
+        r = self._check_cli("physics", self.PACKS["physics"] / "records.jsonl")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("14 record(s)", r.stdout)
+
+    def test_psychology_pack_validates(self):
+        r = self._check_cli("psychology", self.PACKS["psychology"] / "records.jsonl")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("12 record(s)", r.stdout)
+
+    def _rejection_loop(self, onto_name, path):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        onto = domain.load_ontology(onto_name)
+        self.assertTrue(data["record_cases"])
+        for case in data["record_cases"]:
+            problems = domain.validate(case["record"], onto)
+            joined = " ".join(problems)
+            self.assertEqual(case["expect"], "refused", case["id"])
+            self.assertTrue(problems, f"{case['id']} must be refused")
+            for gate in case["expect_gates"]:
+                self.assertIn(gate, joined,
+                              f"{case['id']} should fire {gate}, got: {problems}")
+
+    def test_physics_rejection_cases_fire_expected_gates(self):
+        self._rejection_loop("physics", self.PACKS["physics"] / "rejection-cases.json")
+
+    def test_psychology_rejection_cases_fire_expected_gates(self):
+        self._rejection_loop("psychology", self.PACKS["psychology"] / "rejection-cases.json")
+
+    def _brief_matches_expected(self, onto, path):
+        r = subprocess.run(
+            [sys.executable, str(DOMAIN), "brief", "--ontology", onto,
+             "--file", str(path / "records.jsonl")],
+            capture_output=True, encoding="utf-8", errors="replace")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        expected = (path / "expected-brief.md").read_text(encoding="utf-8")
+        self.assertEqual(r.stdout.strip(), expected.strip(),
+                         f"{onto} brief drifted from expected-brief.md")
+
+    def test_physics_brief_matches_expected(self):
+        self._brief_matches_expected("physics", self.PACKS["physics"])
+
+    def test_psychology_brief_matches_expected(self):
+        self._brief_matches_expected("psychology", self.PACKS["psychology"])
+
+    def test_no_forced_mechanism_and_honest_hypotheses(self):
+        """The review's last checklist item: a store must validate without any
+        mechanism record, and any mechanism that exists must be a falsifiable
+        hypothesis with rivals - never filler."""
+        for name, path in self.PACKS.items():
+            onto = domain.load_ontology(name)
+            lines = (path / "records.jsonl").read_text(encoding="utf-8").splitlines()
+            records = [json.loads(line) for line in lines if line.strip()]
+            stripped = [r for r in records if r["layer"] != "mechanism"]
+            self.assertTrue(stripped, name)
+            for rec in stripped:
+                self.assertEqual(domain.validate(rec, onto), [],
+                                 f"{name}/{rec['id']} should validate without mechanisms")
+            mechs = [r for r in records if r["layer"] == "mechanism"]
+            for rec in mechs:
+                self.assertTrue(rec["mechanism"].get("rivals"), rec["id"])
+                self.assertTrue(rec["mechanism"].get("falsifier"), rec["id"])
+                self.assertEqual(rec["evidence_status"], "HYPOTHESIS", rec["id"])
+
+    def test_synthetic_data_is_labelled_everywhere(self):
+        for name, path in self.PACKS.items():
+            head = (path / "measurements.csv").read_text(encoding="utf-8")[:400]
+            self.assertIn("SYNTHETIC", head, name)
+            store = (path / "records.jsonl").read_text(encoding="utf-8").lower()
+            self.assertIn("sentetik", store, name)
+
+    def test_audit_nominates_unscoped_universal_claim(self):
+        """Generalising one experiment to everything has no record gate; the
+        audit path nominates it. The review's scope-overreach item lives here."""
+        with tempfile.TemporaryDirectory() as tmp:
+            notes = Path(tmp) / "notes.md"
+            notes.write_text(
+                "# Notlar\nSarkaç uzunluğu her zaman periyodu kesinlikle belirler.\n",
+                encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(DOMAIN), "audit", "--notes", str(notes),
+                 "--file", str(self.PACKS["physics"] / "records.jsonl")],
+                capture_output=True, encoding="utf-8", errors="replace")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("unscoped universal claim", result.stdout)
+
+    def test_routing_nominates_the_pack_domain(self):
+        cases = (("physics", "sarkaç deneyi ölçümleri periyot belirsizliği"),
+                 ("psychology", "stroop renk adlandırma tepki süresi deneyi"))
+        for expected, text in cases:
+            r = subprocess.run(
+                [sys.executable, str(DOMAIN), "route", "--text", text],
+                capture_output=True, encoding="utf-8", errors="replace")
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            data = json.loads(r.stdout)
+            self.assertEqual(data["candidates"], [expected], text)
 
 
 if __name__ == "__main__":

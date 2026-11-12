@@ -91,11 +91,21 @@ def contract_cases():
                      "expected": f"exit {expect_exit}", "observed": f"exit {result.returncode}",
                      "passed": not problems, "problems": problems})
 
+    # Was "OK 3 registered ontologies" - exact-count pin extended for the two
+    # registered worked-example domains (physics, psychology); no looser.
     add_case("CON-001", "ontology-check --all validates every registered vocabulary",
-             run([DOMAIN, "ontology-check", "--all"]), 0, "OK 3 registered ontologies")
+             run([DOMAIN, "ontology-check", "--all"]), 0, "OK 5 registered ontologies")
     add_case("CON-002", "check --strict on the shipped 9-record example (reference pack)",
              run([DOMAIN, "check", "--ontology", "songwriting",
                   "--file", "examples/ornek.jsonl", "--strict"]), 0, "OK 9 record(s)")
+    add_case("CON-012", "check --strict on the physics worked example (14 records)",
+             run([DOMAIN, "check", "--ontology", "physics",
+                  "--file", "examples/physics-pendulum/records.jsonl", "--strict"]), 0,
+             "OK 14 record(s)")
+    add_case("CON-013", "check --strict on the psychology worked example (12 records)",
+             run([DOMAIN, "check", "--ontology", "psychology",
+                  "--file", "examples/psychology-stroop/records.jsonl", "--strict"]), 0,
+             "OK 12 record(s)")
 
     r = run([DOMAIN, "route", "--text", "an unregistered expertise area with no keywords"])
     problems = []

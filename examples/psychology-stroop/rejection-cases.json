@@ -1,0 +1,134 @@
+{
+  "domain": "psychology",
+  "version": "0.1.0",
+  "note": "Rejection cases for the psychology-stroop worked example. Every label was written BEFORE the case was run. A case must be REFUSED with the named gate(s); the pack's own records.jsonl is the ACCEPTED control set. Over-generalisation to all humans is intentionally NOT here: no record gate can see it, so it is covered by the `audit` path (unscoped universal claim nomination) and tested there.",
+  "record_cases": [
+    {
+      "id": "REJ-PSY-001",
+      "description": "correlation presented as causation: condition-response association smuggled in as a causal claim",
+      "expect": "refused",
+      "expect_gates": ["T2"],
+      "record": {
+        "id": "REJ-PSY-001", "layer": "observation",
+        "statement": "Uyumsuz koşul tepki süresini artırır.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-40"}],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; nedensel iddia mekanizma katmanına aittir."
+      }
+    },
+    {
+      "id": "REJ-PSY-002",
+      "description": "plausible-sounding fabricated term: cognitive overload index is not declared vocabulary",
+      "expect": "refused",
+      "expect_gates": ["T1"],
+      "record": {
+        "id": "REJ-PSY-002", "layer": "term",
+        "statement": "Uyumsuz koşuldaki yavaşlama, cognitive overload index ile sınıflandırılabilir.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-40"}],
+        "evidence_class": "MEASUREMENT", "representation": "PRESENT", "evidence_status": "INFERRED",
+        "term_id": "TERM-COGNITIVE-OVERLOAD-INDEX", "theory_ids": [],
+        "rival_term_ids": ["TERM-REACTION-TIME"],
+        "distinguishing_test": "Yük indeksi yalnızca tepki süresiyle mi ölçülüyor; kontrol için doğruluk da raporlanmalıdır.",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; uydurma terim T1 ile reddedilmelidir."
+      }
+    },
+    {
+      "id": "REJ-PSY-003",
+      "description": "theory existence treated as experimental observation",
+      "expect": "refused",
+      "expect_gates": ["T5"],
+      "record": {
+        "id": "REJ-PSY-003", "layer": "theory",
+        "statement": "Otomatiklik hesabının doğru olduğu bu verilerde gözlemlenmiştir.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "rows 5-40"}],
+        "evidence_class": "EXTERNAL_SUBJECT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": ["THEORY-AUTOMATICITY-ACCOUNT"],
+        "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "Bu kayıt kasıtlı olarak hatalıdır; teori varlığı mekanizma kanıtı değildir.",
+        "mechanism": {},
+        "claim_limit": "Teori bağlantısı hiç OBSERVED olamaz; yalnızca yorumlayabilir."
+      }
+    },
+    {
+      "id": "REJ-PSY-004",
+      "description": "mechanism without rivals or falsifier",
+      "expect": "refused",
+      "expect_gates": ["T7"],
+      "record": {
+        "id": "REJ-PSY-004", "layer": "mechanism",
+        "statement": "Kelime okuma renk adlandırmayı baskılar.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS",
+        "term_id": null, "theory_ids": ["THEORY-AUTOMATICITY-ACCOUNT"],
+        "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "",
+        "mechanism": {"rivals": [], "falsifier": ""},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; rakipsiz ve falsifiye edilemez mekanizma olmaz."
+      }
+    },
+    {
+      "id": "REJ-PSY-005",
+      "description": "individual psychological claim without subject-level data: a diagnosis-style statement marked OBSERVED",
+      "expect": "refused",
+      "expect_gates": ["G6"],
+      "record": {
+        "id": "REJ-PSY-005", "layer": "observation",
+        "statement": "Katılımcı P-03'un tepki süresi dikkat bozukluğunu gösterir.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [{"kind": "measurement", "ref": "measurements.csv", "locator": "row 7"}],
+        "evidence_class": "EXTERNAL_SUBJECT", "representation": "PRESENT", "evidence_status": "OBSERVED",
+        "term_id": null, "theory_ids": [], "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "", "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; özne düzeyinde veri olmadan bireysel iddia kurulamaz."
+      }
+    },
+    {
+      "id": "REJ-PSY-006",
+      "description": "ungrounded mechanism with a coined name behind it",
+      "expect": "refused",
+      "expect_gates": ["T8"],
+      "record": {
+        "id": "REJ-PSY-006", "layer": "mechanism",
+        "statement": "Renk uyumsuzluğu işlem yükünü artırır.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "COUNTERFACTUAL", "representation": "UNKNOWN", "evidence_status": "HYPOTHESIS",
+        "term_id": null, "theory_ids": [],
+        "rival_term_ids": [], "distinguishing_test": "", "theory_link_note": "",
+        "mechanism": {"rivals": ["Başka bir açıklama"], "falsifier": "Ölçülebilir bir reddedilme koşulu."},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; kanonik terim veya teoriye dayanmayan mekanizma reddedilir."
+      }
+    },
+    {
+      "id": "REJ-PSY-007",
+      "description": "T6 cap bypass attempt: unverified-source theory claimed as INFERRED",
+      "expect": "refused",
+      "expect_gates": ["T6"],
+      "record": {
+        "id": "REJ-PSY-007", "layer": "theory",
+        "statement": "Bu sonuç hız-doğruluk ödünleşmesinin varlığını kanıtlar.",
+        "domain": "psychology",
+        "scope": {"declared": true, "sources": ["measurements.csv"]},
+        "evidence": [],
+        "evidence_class": "MEASUREMENT", "representation": "UNKNOWN", "evidence_status": "INFERRED",
+        "term_id": null, "theory_ids": ["THEORY-SPEED-ACCURACY-TRADEOFF"],
+        "rival_term_ids": [], "distinguishing_test": "",
+        "theory_link_note": "Bu bağlantı T6 sınırını aşmayı deniyor; teorinin doğrulanmış kaynağı yoktur.",
+        "mechanism": {},
+        "claim_limit": "Bu kayıt kasıtlı olarak hatalıdır; kaynak doğrulanmadan INFERRED seviyesi kullanılamaz."
+      }
+    }
+  ]
+}
