@@ -25,6 +25,9 @@ GENERIC = domain.load_ontology("generic")
 _act_spec = importlib.util.spec_from_file_location("activate", HERE / "activate.py")
 activate = importlib.util.module_from_spec(_act_spec)
 _act_spec.loader.exec_module(activate)
+_sem_spec = importlib.util.spec_from_file_location("semantic_grader", HERE / "evals" / "semantic.py")
+semantic_grader = importlib.util.module_from_spec(_sem_spec)
+_sem_spec.loader.exec_module(semantic_grader)
 
 
 def base(**kw):
@@ -672,6 +675,33 @@ class TestAttention(unittest.TestCase):
             r = self.att.attend(text="qqq zzz", store=store)
             self.assertEqual(r["domain"], "songwriting")
             self.assertEqual(r["evidence"]["songwriting"]["store_records"], 2)
+
+
+class TestCausalityScreen(unittest.TestCase):
+    """Stage-2 negation screen (second review, finding A): negated causality is
+    not a causal claim; a causal claim may not hide behind a trailing negation."""
+
+    def test_negated_causality_is_not_forced_into_mechanism(self):
+        rec = base(statement="The changed line does not increase listener recall.")
+        self.assertEqual(problems(rec), "")
+
+    def test_trailing_negation_still_flags_causality(self):
+        rec = base(statement="Repetition increases recall, not the melody.")
+        self.assertIn("T2", problems(rec))
+
+    def test_hedged_modality_is_still_causal(self):
+        self.assertTrue(domain.is_causal("Repetition may increase recall."))
+        self.assertFalse(domain.is_causal("Repetition does not increase recall."))
+
+    def test_grader_locator_rule_rejects_evidence_free_present_observation(self):
+        rec = base(evidence=[])
+        self.assertFalse(semantic_grader.rule_observation_has_locator(rec))
+
+    def test_grader_locator_rule_allows_absence_under_declared_scope(self):
+        rec = base(representation="NOT_REPRESENTED", evidence_status="CANDIDATE",
+                   evidence=[],
+                   claim_limit="Absence in this file only; nothing beyond this scope.")
+        self.assertTrue(semantic_grader.rule_observation_has_locator(rec))
 
 
 if __name__ == "__main__":

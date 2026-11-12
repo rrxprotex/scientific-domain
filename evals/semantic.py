@@ -13,29 +13,30 @@ rule. That way the grader is verified, not just run.
 Rules:
   claim_limit_present          every record states what it may NOT assert (15+ chars)
   observation_no_causal        no causal wording inside an observation record
+                               (negated causality is not a causal claim; the
+                               screen is domain.is_causal, shared with the validator)
   term_has_rival_and_test      a term record names a rival and a distinguishing test
   theory_never_observed        a theory link is never graded OBSERVED
   mechanism_has_rivals_falsifier  a mechanism names >=1 rival and a falsifier
   mechanism_grounded           a mechanism is anchored in a term_id or theory_id
-  observation_has_locator      an observation's artifact_site/measurement has a locator
+  observation_has_locator      a PRESENT/OBSERVED observation carries a located
+                               artifact_site/measurement; every locator-requiring
+                               evidence row has a non-empty locator
 """
 from __future__ import annotations
 
+import importlib.util
 import json
-import re
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 
-CAUSE_RE = re.compile(
-    r"\b(causes?|because|leads?\s+to|results?\s+in|drives?|determines?|"
-    r"produces?|increases?|improves?|guarantees?|proves?|ensures?)\b|"
-    r"neden|mekanizma|artırır|arttırır|sağlar|yol\s+açar|etkisidir|"
-    r"sonucunda|sayesinde",
-    re.I,
-)
+_spec = importlib.util.spec_from_file_location("domain", ROOT / "domain.py")
+domain = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(domain)
+
 LOCATOR_REQUIRED = ("artifact_site", "source_mention", "measurement", "intervention")
 
 
@@ -53,7 +54,7 @@ def rule_observation_no_causal(rec):
         return True
     if rec.get("evidence_status") == "DOCUMENTED_CLAIM":
         return True
-    return not CAUSE_RE.search(str(rec.get("statement") or ""))
+    return not domain.is_causal(str(rec.get("statement") or ""))
 
 
 def rule_term_has_rival_and_test(rec):
@@ -88,9 +89,22 @@ def rule_mechanism_grounded(rec):
 
 
 def rule_observation_has_locator(rec):
+    """An observation is only as good as its located evidence.
+
+    A PRESENT/OBSERVED observation must carry at least one artifact_site or
+    measurement row - an evidence-free observation is not a located finding.
+    Every locator-requiring evidence row must carry a non-empty locator.
+    NOT_REPRESENTED / UNKNOWN observations may carry no evidence rows (absence
+    under declared scope is a real result); their guard is G3 in the validator.
+    """
     if rec.get("layer") != "observation":
         return True
-    for ev in _evidence(rec):
+    evidence = _evidence(rec)
+    kinds = [ev.get("kind") for ev in evidence if isinstance(ev, dict)]
+    if rec.get("representation") == "PRESENT" or rec.get("evidence_status") == "OBSERVED":
+        if not any(k in ("artifact_site", "measurement") for k in kinds):
+            return False
+    for ev in evidence:
         if isinstance(ev, dict) and ev.get("kind") in LOCATOR_REQUIRED:
             if not str(ev.get("locator") or "").strip():
                 return False

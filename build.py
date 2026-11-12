@@ -165,7 +165,7 @@ def mechanism(rid: str, statement: str, rivals: list, falsifier: str,
               *, term_id=None, theory_ids=None, intervention=None,
               scope=None, evidence=None, claim_limit=None, **overrides) -> dict:
     """Build a canonical mechanism record (HYPOTHESIS / UNKNOWN / COUNTERFACTUAL)."""
-    if not domain.CAUSE_RE.search(statement or ""):
+    if not domain.is_causal(statement):
         raise ValueError("mechanism statement requires causal wording "
                          "(e.g. 'increases', 'leads to', 'because', 'artırır', 'neden')")
     rec = _skeleton("mechanism", rid, statement, domain_name)

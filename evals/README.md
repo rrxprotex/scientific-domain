@@ -6,13 +6,13 @@ Two runners, both **static, model-free, stdlib-only**:
   `eval-results.json`.
 - `python evals/semantic.py` — the structural grader for multi-record outputs
   (see below); a self-test over `semantic.json`.
-- `python evals/adversarial.py` — **adversarial scientific evaluation**: 15
-  attack records (fabricated terms/theories, hidden causality, ungrounded
-  mechanisms, scope-less absence, credential strings…) that must be REFUSED
-  with the named gate, 4 control records that must be ACCEPTED, and 5 attack
-  prompts (greeting disguise, prompt injection, shouting/emoji, word
-  repetition). Labels live in `adversarial.json`, written before the runner.
-  Writes `adversarial-results.json`.
+- `python evals/adversarial.py` — **adversarial scientific evaluation**: 26
+  labelled cases written before the runner - 16 attack records (fabricated
+  terms/theories, hidden causality, ungrounded mechanisms, scope-less absence,
+  credential strings, evidence-free PRESENT observations…) that must be REFUSED
+  with the named gate, 5 accepted records (4 controls + 1 negation-screen
+  regression), and 5 attack prompts (greeting disguise, prompt injection,
+  shouting/emoji, word repetition). Writes `adversarial-results.json`.
 - `python evals/dualarm.py` — the **dual-arm benchmark instrument** (see below).
 
 No API key, no network, no language model.

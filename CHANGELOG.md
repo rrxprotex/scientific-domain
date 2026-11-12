@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.7.1] - 2026-11-12
+
+Second external technical review fixes. Both findings reproduced against the
+code first, then fixed, then regression-tested.
+
+### Fixed
+- **Semantic grader locator weakness (review finding C):**
+  `rule_observation_has_locator` returned `True` for observations with no
+  locator-requiring evidence rows at all - an evidence-free `PRESENT`
+  observation slipped through the grader. The rule now requires a located
+  `artifact_site`/`measurement` for `PRESENT`/`OBSERVED` observations, while
+  `NOT_REPRESENTED`/`UNKNOWN` absence records remain legal (their guard is G3).
+  The grader's causal rule now shares `domain.is_causal` with the validator
+  instead of a stale private regex copy.
+- **Negation false positives (review finding A, stage 2):** negated causality
+  ("does not increase", "artırmaz") was flagged as a causal claim and forced
+  into the mechanism layer. `domain.is_causal` adds a deterministic negation
+  screen: a negation immediately preceding the trigger defuses the claim. The
+  screen is conservative in the SAFE direction - a trailing negation ("increases
+  recall, not the melody") still counts as causal, and hedged modality ("may
+  increase") remains causal by design (it is a hypothesis).
+- 5 new unit tests (89 total) and 2 new adversarial cases (26 total), including
+  the regression pair ADV-016/ADV-017.
+
 ## [0.7.0] - 2026-11-12
 
 Adversarial scientific evaluation + the dual-arm instrument. Directly answers

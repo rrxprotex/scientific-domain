@@ -64,6 +64,34 @@ CAUSE_RE = re.compile(
     r"giderir|tetikler|aracı olur",
     re.I,
 )
+
+# Stage 2 of the causality screen: negation immediately before the trigger.
+NEGATION_BEFORE_RE = re.compile(
+    r"(not|no|never|cannot|without|doesn'?t|isn'?t|aren'?t|didn'?t|won'?t|"
+    r"değil|yok|olmaz|artmaz|artırmaz|azalmaz|azaltmaz|etkilemez)"
+    r"\s+(\S+\s+){0,2}$",
+    re.I,
+)
+
+
+def is_causal(statement):
+    """Causal wording that is NEGATED is not a causal claim.
+
+    Stage 2 of the causality screen (stage 1 is CAUSE_RE candidate matching):
+    'Repetition does not increase recall' asserts no effect and must not be
+    forced into the mechanism layer. The screen is deliberately conservative in
+    the SAFE direction: only a negation immediately preceding the trigger
+    defuses it ('increases recall, not the melody' still counts as causal, so a
+    causal claim can never hide behind a trailing negation). Hedged modality
+    ('may increase') is still causal - it is a hypothesis and belongs in a
+    mechanism record. Negated claims quoted from a source belong in
+    DOCUMENTED_CLAIM, which rule T2 already exempts.
+    """
+    s = str(statement or "")
+    m = CAUSE_RE.search(s)
+    if not m:
+        return False
+    return not NEGATION_BEFORE_RE.search(s[:m.start()])
 STRONG_RE = re.compile(
     r"\b(always|never|proven|does not exist|certainly|must|all songs|"
     r"scientifically proven)\b|her\s+zaman|her\s+şey|kesinlikle|kanıtlanmış|yoktur|"
@@ -430,7 +458,7 @@ def validate(rec, onto, profile="strict"):
         problems.append(f"{rid}: no sourced vocabulary for this domain; only "
                         f"layer=observation is allowed - add an ontology before linking (T9)")
 
-    causal = bool(CAUSE_RE.search(statement))
+    causal = is_causal(statement)
 
     if layer == "observation":
         # T2 - a pure observation may not smuggle an interpretation.

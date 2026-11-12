@@ -87,6 +87,21 @@ calls it."*
 - Team features: corpus merge rules, `CONTESTED` workflow, export formats.
 - Hosted/API variant only if adoption justifies it.
 
+### M4 — Semantic layer (from the second external review, 2026-11-12)
+**Feature freeze until M2 measurement runs or P0 provenance ships.** The
+review's verdict is accepted: the project's biggest need is not more features
+but evidence that its discipline improves real research quality.
+- P0 **Evidence Provenance Engine**: per-evidence `quote` + `derivation` (how
+  the claim follows from the quote), locator verification hooks, claim-source
+  support labelling. Structural only - semantic truth stays a human judgement.
+- P1 Semantic engine: negation/uncertainty analysis beyond the current
+  pre-trigger screen, semantic contradiction nomination (nominations only,
+  `CONTESTED` stays exact-match), concept synonymy.
+- P2 Domain intelligence: cross-ontology relations, ontology version policy,
+  relation graphs. Human confirmation (consent flow) is non-negotiable.
+- P3 Research benchmark: multi-model ON/OFF runs, >=100 real research tasks,
+  blind judging, false-accept/false-reject rates, cost/latency tables.
+
 ## 6. Quality bar (release gates)
 
 - All unit tests, ontology checks, strict example validation green on 3 OS ×

@@ -78,10 +78,10 @@ Then validate the shipped reference pack end to end:
 ```bash
 python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
 python domain.py brief --ontology songwriting --file examples/ornek.jsonl
-python tests.py             # 84 unit tests
+python tests.py             # 89 unit tests
 python evals/run.py         # 30 static eval cases
 python evals/semantic.py    # 8 structural grader cases
-python evals/adversarial.py # 24 adversarial cases (attacks + controls)
+python evals/adversarial.py # 26 adversarial cases (attacks + controls)
 python evals/dualarm.py     # dual-arm instrument -> NOT_RUN until a model is configured
 ```
 
@@ -200,8 +200,8 @@ ontology.index.json          domain registry (maps names to vocabulary files)
 ontology.generic.json        vocabulary-free DEFAULT (until the user confirms a domain)
 examples/                    OPT-IN reference packs: ontology.songwriting.json,
                              ontology.literary-rhetoric.json, ornek.* worked example
-tests.py                     84 unit tests
-evals/                       19 activation + 11 contract + 24 adversarial cases,
+tests.py                     89 unit tests
+evals/                       19 activation + 11 contract + 26 adversarial cases,
                              structural grader, dual-arm instrument
 adapters/                    Claude Code / WorkBuddy / OpenCode / generic
 docs/ontology-authoring.md   how to add a domain
