@@ -73,13 +73,15 @@ def classify(text):
     low = t.lower()
     if not t:
         return decision("ABSTAIN", None, "empty prompt", [])
-    if GREETING.match(low):
+    pos = [p for p in POSITIVE if re.search(p, low)]
+    neg = [p for p in NEGATIVE if re.search(p, low)]
+    # A greeting only wins when there is NO knowledge-work signal; "merhaba,
+    # bu şarkıyı analiz et" is a knowledge task, not a greeting.
+    if GREETING.match(low) and not pos:
         return decision("SKIP", None, "greeting or thanks", [])
     words = t.split()
     if len(words) < 3:
         return decision("ABSTAIN", None, "prompt too short to classify", [])
-    pos = [p for p in POSITIVE if re.search(p, low)]
-    neg = [p for p in NEGATIVE if re.search(p, low)]
     if neg and not pos:
         return decision("SKIP", None, "matched a negative trigger", neg)
     if len(words) <= 9 and SIMPLE_WHAT.match(low) and not pos:

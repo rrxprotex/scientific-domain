@@ -73,10 +73,13 @@ calls it."*
 - CI badge + release checklist in CONTRIBUTING.
 
 ### M2 — Evidence of value (the missing measurement)
-- Run the **dual-arm eval** defined in `evals/README.md`: same tasks, skill on
-  vs. off, judged by the same rubric. This is the gate for any claim that the
-  skill "improves research output".
+- Instrument READY: `evals/dualarm.py` runs the two arms (skill on / off),
+  collects artifacts and grades them on rubric R1–R5, reporting the delta.
+  Status stays `NOT_RUN` until someone configures a model command and runs it.
 - Publish per-case artifacts and the delta, including a null result.
+- Adversarial evaluation (DONE): `evals/adversarial.py`, 24 labelled attacks
+  and controls; the suite already caught one real bug (greeting-disguised
+  knowledge tasks were skipped).
 
 ### M3 — Growth (post-1.0, demand-driven)
 - Third domain ontology authored by someone who is not the engine author

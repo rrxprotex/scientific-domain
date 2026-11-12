@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.7.0] - 2026-11-12
+
+Adversarial scientific evaluation + the dual-arm instrument. Directly answers
+the "prove the gates hold under attack" and "prove the skill helps" gaps.
+
+### Added
+- `evals/adversarial.py` + `evals/adversarial.json`: 24 labelled cases written
+  before the runner - 15 attack records that must be REFUSED with the named
+  gate (fabricated term/theory, unverified-citation promotion, hidden
+  causality, ungrounded mechanism, theory-as-observed, scope-less absence,
+  credential string, verdict-smuggling, listener-claim-as-observed, T9
+  vocabulary forgery, rival-less term, source-less DOCUMENTED_CLAIM, smuggled
+  link), 4 control records that must be ACCEPTED, and 5 attack prompts
+  (greeting disguise, prompt injection, shouting/emoji, word repetition,
+  causal-question phrasing). Writes `adversarial-results.json`.
+- `evals/dualarm.py`: the dual-arm benchmark instrument behind
+  `liveModelDualArm`. Without a model command it reports NOT_RUN (the shipped
+  state); with `--on`/`--off` arms and a `--judge` it grades artifacts on the
+  fixed rubric R1-R5 and reports the DELTA between arms.
+- CI runs the adversarial suite.
+
+### Fixed
+- Activation: a knowledge task prefixed by a greeting ("merhaba, bu şarkıyı
+  analiz et") was wrongly SKIPped. Greetings now only win when no knowledge-work
+  signal is present. Found by the adversarial probe (ADVP-001), proving the
+  method earns its place.
+
 ## [0.6.1] - 2026-11-12
 
 Packaging fix, no code change. The `v0.6.0` commit tree accidentally carried

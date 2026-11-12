@@ -8,6 +8,10 @@ venv/
 # Generated records (the shipped example is committed deliberately)
 records.jsonl
 eval-results.json
+adversarial-results.json
+dualarm-results.json
+dualarm-artifacts/
+domain.config.json
 
 # OS / editor
 .DS_Store

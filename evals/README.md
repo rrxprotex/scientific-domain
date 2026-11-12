@@ -6,6 +6,14 @@ Two runners, both **static, model-free, stdlib-only**:
   `eval-results.json`.
 - `python evals/semantic.py` — the structural grader for multi-record outputs
   (see below); a self-test over `semantic.json`.
+- `python evals/adversarial.py` — **adversarial scientific evaluation**: 15
+  attack records (fabricated terms/theories, hidden causality, ungrounded
+  mechanisms, scope-less absence, credential strings…) that must be REFUSED
+  with the named gate, 4 control records that must be ACCEPTED, and 5 attack
+  prompts (greeting disguise, prompt injection, shouting/emoji, word
+  repetition). Labels live in `adversarial.json`, written before the runner.
+  Writes `adversarial-results.json`.
+- `python evals/dualarm.py` — the **dual-arm benchmark instrument** (see below).
 
 No API key, no network, no language model.
 
@@ -36,6 +44,15 @@ A score of 1.00 means these deterministic checks passed. It is not a claim about
 semantic reasoning quality or model adherence.
 
 ## Running the missing measurement
+
+`evals/dualarm.py` is the instrument. Without a model command it reports
+`NOT_RUN` (the state this repository ships in). With `--on` / `--off` commands
+(identical except for the skill being loaded) it runs every case twice,
+collects artifacts into `dualarm-artifacts/`, and — with `--judge` — grades each
+artifact on the rubric R1–R5 (canonical terms only, citation status labelled,
+theory never OBSERVED, causal claims carry rivals + falsifier, claim_limit
+present). It reports the **delta between arms**, which is the only evidence of
+benefit.
 
 1. Take the 19 prompts from `cases.json` plus 10–20 real domain tasks.
 2. Run each twice: skill installed vs not installed, same model, same judge.

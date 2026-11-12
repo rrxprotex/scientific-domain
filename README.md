@@ -81,6 +81,8 @@ python domain.py brief --ontology songwriting --file examples/ornek.jsonl
 python tests.py             # 84 unit tests
 python evals/run.py         # 30 static eval cases
 python evals/semantic.py    # 8 structural grader cases
+python evals/adversarial.py # 24 adversarial cases (attacks + controls)
+python evals/dualarm.py     # dual-arm instrument -> NOT_RUN until a model is configured
 ```
 
 `examples/ornek.cho` is a short original Turkish lyric (reference pack);
@@ -199,7 +201,8 @@ ontology.generic.json        vocabulary-free DEFAULT (until the user confirms a 
 examples/                    OPT-IN reference packs: ontology.songwriting.json,
                              ontology.literary-rhetoric.json, ornek.* worked example
 tests.py                     84 unit tests
-evals/                       19 activation + 11 contract cases, runner, results
+evals/                       19 activation + 11 contract + 24 adversarial cases,
+                             structural grader, dual-arm instrument
 adapters/                    Claude Code / WorkBuddy / OpenCode / generic
 docs/ontology-authoring.md   how to add a domain
 docs/quick-reference.md      one-page pocket card: layers, gates, commands
