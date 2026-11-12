@@ -5,8 +5,9 @@ __pycache__/
 .venv/
 venv/
 
-# Generated records (the shipped example is committed deliberately)
+# Generated records (the shipped examples are committed deliberately)
 records.jsonl
+!examples/*/records.jsonl
 eval-results.json
 adversarial-results.json
 dualarm-results.json

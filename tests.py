@@ -987,6 +987,24 @@ class TestCrossDomainPacks(unittest.TestCase):
             data = json.loads(r.stdout)
             self.assertEqual(data["candidates"], [expected], text)
 
+    def test_pack_records_are_tracked_by_git(self):
+        """Regression (0.8.1): the root 'records.jsonl' ignore rule silently
+        excluded the packs' record stores from git, so 0.8.0 shipped without
+        them and its CI failed in every matrix cell. The files must be
+        tracked; a package that validates only in the author's working tree
+        is not a package."""
+        try:
+            r = subprocess.run(["git", "ls-files", "examples"],
+                               capture_output=True, encoding="utf-8",
+                               errors="replace", timeout=30, cwd=str(HERE))
+        except (OSError, subprocess.TimeoutExpired):
+            self.skipTest("git not available")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        tracked = set(r.stdout.splitlines())
+        for name, path in self.PACKS.items():
+            rel = path.relative_to(HERE).as_posix() + "/records.jsonl"
+            self.assertIn(rel, tracked, name)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

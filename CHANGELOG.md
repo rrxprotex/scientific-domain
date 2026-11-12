@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.1] - 2026-11-12
+
+Packaging fix for 0.8.0, found by a CI matrix run on the pushed commit (same
+trajectory as 0.6.1).
+
+### Fixed
+- **The two worked examples shipped without their `records.jsonl`.** The
+  root-level `records.jsonl` ignore rule (for locally generated records)
+  matched at any depth and silently excluded `examples/physics-pendulum/` and
+  `examples/psychology-stroop/` from `git add`. Every pack record file is now
+  committed deliberately (the rule's original intent) via
+  `!examples/*/records.jsonl`, and CI on `master` is green again.
+- Consequence on 0.8.0's CI: 6 unit tests and the honesty job failed in every
+  matrix cell because the pack files were absent from the checkout. The
+  failure was reproduced against a clean clone; a regression test now pins
+  that both packs' records are tracked by git.
+- 1 new unit test (113 total) pinning that the packs' record stores are
+  tracked by git.
+
 ## [0.8.0] - 2026-11-12
 
 Fifth external review: the milestone is not a validator feature but a

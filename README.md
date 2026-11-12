@@ -94,7 +94,7 @@ Then validate the shipped reference pack end to end:
 ```bash
 python domain.py check --ontology songwriting --file examples/ornek.jsonl --strict
 python domain.py brief --ontology songwriting --file examples/ornek.jsonl
-python tests.py             # 112 unit tests
+python tests.py             # 113 unit tests
 python evals/run.py         # 32 static eval cases
 python evals/semantic.py    # 8 structural grader cases
 python evals/adversarial.py # 28 adversarial cases (attacks + controls)
@@ -223,7 +223,7 @@ examples/physics-pendulum/   worked example: simple pendulum (ontology, SYNTHETI
                              measurements, records, sources, expected brief,
                              rejection cases)
 examples/psychology-stroop/  worked example: Stroop effect (same pack layout)
-tests.py                     112 unit tests
+tests.py                     113 unit tests
 evals/                       19 activation + 13 contract + 28 adversarial cases,
                              structural grader, dual-arm instrument
 adapters/                    Claude Code / WorkBuddy / OpenCode / generic
