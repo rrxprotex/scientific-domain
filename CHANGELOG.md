@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1] - 2026-11-12
+
+Packaging fix, no code change. The `v0.6.0` commit tree accidentally carried
+both layouts: the moved `examples/` reference packs AND their stale root copies
+(the staging happened before the move). This release removes the five stale
+root copies so the shipped tree has exactly one layout. History is not
+rewritten; this entry records what happened, as the honesty boundary requires.
+
 ## [0.6.0] - 2026-11-12
 
 Domain attention: a system that determines which expertise domain a task
