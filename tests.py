@@ -926,7 +926,10 @@ class TestCrossDomainPacks(unittest.TestCase):
             capture_output=True, encoding="utf-8", errors="replace")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         expected = (path / "expected-brief.md").read_text(encoding="utf-8")
-        self.assertEqual(r.stdout.strip(), expected.strip(),
+        # Normalise newlines: CI checkouts may be LF while a Windows child
+        # writes CRLF through its stdio layer (and vice versa).
+        self.assertEqual(r.stdout.replace("\r\n", "\n").strip(),
+                         expected.replace("\r\n", "\n").strip(),
                          f"{onto} brief drifted from expected-brief.md")
 
     def test_physics_brief_matches_expected(self):
